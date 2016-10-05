@@ -224,7 +224,7 @@ static void imx219_mclk_enable(struct camera_common_power_rail *pw)
 
 static int imx219_power_on(struct camera_common_data *s_data)
 {
-	int err = 0;
+	//int err = 0;
 	struct imx219 *priv = (struct imx219 *)s_data->priv;
 	struct camera_common_power_rail *pw = &priv->power;
 
@@ -236,6 +236,7 @@ static int imx219_power_on(struct camera_common_data *s_data)
 		gpio_set_value(pw->reset_gpio, 0);
 	usleep_range(10, 20);
 
+	/*
 	if (pw->avdd)
 		err = regulator_enable(pw->avdd);
 	if (err)
@@ -250,6 +251,7 @@ static int imx219_power_on(struct camera_common_data *s_data)
 		err = regulator_enable(pw->dvdd);
 	if (err)
 		goto imx219_dvdd_fail;
+	*/
 
 	usleep_range(1, 2);
 	if (gpio_cansleep(pw->reset_gpio))
@@ -267,6 +269,7 @@ static int imx219_power_on(struct camera_common_data *s_data)
 	pw->state = SWITCH_ON;
 	return 0;
 
+/*
 imx219_dvdd_fail:
 	regulator_disable(pw->iovdd);
 
@@ -275,6 +278,7 @@ imx219_iovdd_fail:
 
 imx219_avdd_fail:
 	return -ENODEV;
+*/
 }
 
 static int imx219_power_off(struct camera_common_data *s_data)
@@ -291,6 +295,7 @@ static int imx219_power_off(struct camera_common_data *s_data)
 		gpio_set_value(pw->reset_gpio, 0);
 	usleep_range(1, 2);
 
+	/*
 	if (pw->dvdd)
 		regulator_disable(pw->dvdd);
 	if (pw->iovdd)
@@ -298,6 +303,7 @@ static int imx219_power_off(struct camera_common_data *s_data)
 	if (pw->avdd)
 		regulator_disable(pw->avdd);
 
+	*/
 	imx219_mclk_disable(pw);
 	pw->state = SWITCH_OFF;
 	return 0;
@@ -305,9 +311,11 @@ static int imx219_power_off(struct camera_common_data *s_data)
 
 static int imx219_power_put(struct imx219 *priv)
 {
+	
 	struct camera_common_power_rail *pw = &priv->power;
 	if (unlikely(!pw))
 		return -EFAULT;
+	/*
 
 	if (likely(pw->avdd))
 		regulator_put(pw->avdd);
@@ -321,6 +329,7 @@ static int imx219_power_put(struct imx219 *priv)
 	pw->avdd = NULL;
 	pw->iovdd = NULL;
 	pw->dvdd = NULL;
+	*/
 
 	return 0;
 }
@@ -342,14 +351,14 @@ static int imx219_power_get(struct imx219 *priv)
 	}
 
 	/* ananlog 2.7v */
-	err |= camera_common_regulator_get(priv->i2c_client,
-			&pw->avdd, pdata->regulators.avdd);
+	//err |= camera_common_regulator_get(priv->i2c_client,
+	//		&pw->avdd, pdata->regulators.avdd);
 	/* digital 1.2v */
-	err |= camera_common_regulator_get(priv->i2c_client,
-			&pw->dvdd, pdata->regulators.dvdd);
+	//err |= camera_common_regulator_get(priv->i2c_client,
+	//		&pw->dvdd, pdata->regulators.dvdd);
 	/* IO 1.8v */
-	err |= camera_common_regulator_get(priv->i2c_client,
-			&pw->iovdd, pdata->regulators.iovdd);
+	//err |= camera_common_regulator_get(priv->i2c_client,
+	//		&pw->iovdd, pdata->regulators.iovdd);
 
 	if (!err)
 		pw->reset_gpio = pdata->reset_gpio;
@@ -710,6 +719,7 @@ static struct camera_common_pdata *imx219_parse_dt(struct i2c_client *client)
 	}
 	board_priv_pdata->reset_gpio = (unsigned int)gpio;
 
+	/*
 	err = of_property_read_string(np, "avdd-reg",
 			&board_priv_pdata->regulators.avdd);
 	if (err) {
@@ -728,6 +738,7 @@ static struct camera_common_pdata *imx219_parse_dt(struct i2c_client *client)
 		dev_err(&client->dev, "iovdd-reg not in DT\n");
 		goto error;
 	}
+	*/
 
 	return board_priv_pdata;
 
@@ -757,10 +768,12 @@ static int imx219_probe(struct i2c_client *client,
 {
 	struct camera_common_data *common_data;
 	struct device_node *node = client->dev.of_node;
-	struct soc_camera_link *imx219_iclink;
+	//struct soc_camera_link *imx219_iclink;
 	struct imx219 *priv;
-	char node_name[10];
+	//char node_name[10];
 	int err;
+
+	pr_info("[IMX219]: probing v4l2 sensor.\n");
 
 	if (!IS_ENABLED(CONFIG_OF) || !node)
 		return -EINVAL;
@@ -789,15 +802,18 @@ static int imx219_probe(struct i2c_client *client,
 	}
 
 	/* HACK: use DT for parsing platform data when we are using */
+	/*
 	sprintf(node_name, "imx219_%c", 'a' + client->adapter->nr - 30);
+	pr_info("Node Name: %s" % node_name);
 	client->dev.of_node = of_find_node_by_name(NULL, node_name);
+	*/
 
-	if (client->dev.of_node)
+	//if (client->dev.of_node)
 		priv->pdata = imx219_parse_dt(client);
-	else {
-		imx219_iclink = client->dev.platform_data;
-		priv->pdata = imx219_iclink->dev_priv;
-	}
+	//else {
+	//	imx219_iclink = client->dev.platform_data;
+	//	priv->pdata = imx219_iclink->dev_priv;
+	//}
 
 	if (!priv->pdata) {
 		dev_err(&client->dev, "unable to get platform data\n");

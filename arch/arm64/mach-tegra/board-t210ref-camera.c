@@ -128,6 +128,46 @@ static struct platform_device t210ref_imx214_soc_camera_device = {
 };
 #endif
 
+#if IS_ENABLED(CONFIG_VIDEO_IMX219)
+static int t210ref_imx219_power(struct device *dev, int enable)
+{
+	return 0;
+}
+
+static struct camera_common_pdata t210ref_imx219_data;
+
+static struct i2c_board_info t210ref_imx219_camera_i2c_device = {
+	I2C_BOARD_INFO("imx219", 0x10),
+};
+
+static struct tegra_camera_platform_data t210ref_imx219_camera_platform_data = {
+	.flip_v			      = 0,
+	.flip_h			      = 0,
+	.port			        = TEGRA_CAMERA_PORT_CSI_A,
+	.lanes			      = 2,
+	.continuous_clk		= 0,
+};
+
+static struct soc_camera_link imx219_iclink = {
+	.bus_id		      = 0, /* This must match the .id of tegra_vi01_device */
+	.board_info	    = &t210ref_imx219_camera_i2c_device,
+	.module_name	  = "imx219",
+	.i2c_adapter_id	= 6, /* VI2 I2C controller */
+	.power		      = t210ref_imx219_power,
+	.priv		        = &t210ref_imx219_camera_platform_data,
+	.dev_priv	      = &t210ref_imx219_data,
+};
+
+static struct platform_device t210ref_imx219_bottom_soc_camera_device = {
+	.name	= "soc-camera-pdrv",
+	.id	= 0,
+	.dev	= {
+		.platform_data = &imx219_iclink,
+	},
+};
+
+#endif
+
 #if IS_ENABLED(CONFIG_SOC_CAMERA_OV5693)
 static int t210ref_ov5693_power(struct device *dev, int enable)
 {
@@ -467,13 +507,39 @@ static struct platform_device t210ref_ov5693_e3326_soc_camera_device = {
 int t210ref_camera_init(void)
 {
 	pr_debug("%s: ++\n", __func__);
+	//pr_info("%s: Entered\n", __func__);
 #if IS_ENABLED(CONFIG_SOC_CAMERA_PLATFORM)
 	platform_device_register(&t210ref_soc_camera_device);
+#endif
+
+#if IS_ENABLED(CONFIG_VIDEO_IMX219)
+  if (of_machine_is_compatible("nvidia,mit-uav-reva")) {
+    pr_info("%s: MIT UAV REVA Detected\n", __func__);
+
+		//Register all camera
+
+		//Register Front Left Camera
+		//platform_device_register(&t210ref_imx219_front_left_soc_camera_device);
+
+		//Register Front Right Camera
+		//platform_device_register(&t210ref_imx219_front_right_soc_camera_device);
+
+		//Register Bottom Camera
+    if (of_find_node_by_name(NULL, "imx219_a"))
+    {
+      pr_info("%s: Detected IMX219 in Device Tree\n", __func__);
+		  platform_device_register(&t210ref_imx219_bottom_soc_camera_device);
+    }
+    else
+      pr_warning("%s: Did not find imx219_a in device tree\n", __func__);
+	}
+
 #endif
 
 #if IS_ENABLED(CONFIG_SOC_CAMERA_IMX214)
 	platform_device_register(&t210ref_imx214_soc_camera_device);
 #endif
+
 
 #if IS_ENABLED(CONFIG_SOC_CAMERA_OV5693)
 	if (of_machine_is_compatible("nvidia,jetson-e")) {
@@ -481,9 +547,10 @@ int t210ref_camera_init(void)
 				&t210ref_ov5693_rear_soc_camera_device);
 		platform_device_register(
 				&t210ref_ov5693_front_soc_camera_device);
-	} else if (of_machine_is_compatible("nvidia,jetson-cv"))
+	} else if (of_machine_is_compatible("nvidia,jetson-cv")) {
 		platform_device_register(
 				&t210ref_ov5693_e3326_soc_camera_device);
+	}
 	else if (of_machine_is_compatible("nvidia,e2220")) {
 		platform_device_register(&t210ref_ov5693_a_soc_camera_device);
 		platform_device_register(&t210ref_ov5693_b_soc_camera_device);
