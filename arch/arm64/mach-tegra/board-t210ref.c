@@ -205,6 +205,7 @@ static struct of_dev_auxdata t210ref_auxdata_lookup[] __initdata = {
 
 static void __init tegra_t210ref_early_init(void)
 {
+	printk("%s: Early Init Entered\n", __func__);
 	if (!tegra_platform_is_fpga()) {
 		tegra_clk_init_from_dt("t210-clk-init-table");
 		tegra_clk_verify_parents();
@@ -223,8 +224,14 @@ static void __init tegra_t210ref_early_init(void)
 		tegra_soc_device_init("foster_e");
 	else if (of_machine_is_compatible("nvidia,jetson-e"))
 		tegra_soc_device_init("jetson_e");
-	else if (of_machine_is_compatible("nvidia,jetson-cv"))
+	else if (of_machine_is_compatible("nvidia,jetson-cv")) {
 		tegra_soc_device_init("jetson_cv");
+		pr_info("board_name: jetson_cv\n");
+	}
+	else if (of_machine_is_compatible("nvidia,mit-uav-reva")){
+		tegra_soc_device_init("mit_uav_reva");
+		pr_info("board_name: mit_uav_reva\n");
+	}
 	else if (of_machine_is_compatible("nvidia,he2290"))
 		tegra_soc_device_init("he2290");
 }
@@ -401,6 +408,7 @@ static const char * const t210ref_dt_board_compat[] = {
 	"nvidia,foster-e",
 	"nvidia,jetson-e",
 	"nvidia,jetson-cv",
+  "nvidia,mit-uav-reva",
 	"nvidia,he2290",
 	NULL
 };
