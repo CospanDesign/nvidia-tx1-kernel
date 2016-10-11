@@ -187,18 +187,18 @@
 					readout_orientation = "90";
 					inherent_gain = "1";
 
-					active_w = "3448";
-					active_h = "2493";
+					active_w = "1920";
+					active_h = "1080";
 
-					line_length = "2599";
+					line_length = "3448";
 
 					min_gain_val = "1.0";
-					max_gain_val = "16.0";
+					max_gain_val = "8.0";
 					min_hdr_ratio = "1";
-					max_hdr_ratio = "64";
-					min_framerate = "2";
+					max_hdr_ratio = "1";
+					min_framerate = "1";
 					max_framerate = "30";
-					min_exp_time = "13";
+					min_exp_time = "24";
 					max_exp_time = "683709";
 				};
 				mode1 { // IMX219_MODE_1280X720
@@ -214,18 +214,18 @@
 					readout_orientation = "90";
 					inherent_gain = "1";
 
-					active_w = "3448";
-					active_h = "2493";
+					active_w = "1280";
+					active_h = "720";
 
-					line_length = "2919";
+					line_length = "3448";
 
 					min_gain_val = "1.0";
-					max_gain_val = "16.0";
+					max_gain_val = "8.0";
 					min_hdr_ratio = "1";
-					max_hdr_ratio = "64";
-					min_framerate = "30";
+					max_hdr_ratio = "1";
+					min_framerate = "1";
 					max_framerate = "60";
-					min_exp_time = "13";
+					min_exp_time = "11";
 					max_exp_time = "683709";
 				};
 				mode2 { // IMX219_MODE_640X480
@@ -242,18 +242,18 @@
 					readout_orientation = "90";
 					inherent_gain = "1";
 
-					active_w = "3448";
-					active_h = "2493";
+					active_w = "1640";
+					active_h = "1232";
 
-					line_length = "3279";
+					line_length = "3448";
 
 					min_gain_val = "1.0";
-					max_gain_val = "16.0";
+					max_gain_val = "8.0";
 					min_hdr_ratio = "1";
-					max_hdr_ratio = "64";
-					min_framerate = "30";
+					max_hdr_ratio = "1";
+					min_framerate = "1";
 					max_framerate = "60";
-					min_exp_time = "13";
+					min_exp_time = "11";
 					max_exp_time = "683709";
 				};
 
