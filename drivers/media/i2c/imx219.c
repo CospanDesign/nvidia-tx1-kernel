@@ -60,6 +60,7 @@
 #define IMX219_DEFAULT_HEIGHT           1080
 #define IMX219_DEFAULT_DATAFMT          V4L2_MBUS_FMT_SRGGB10_1X10
 #define IMX219_DEFAULT_CLK_FREQ         24000000
+#define IMX219_DEFAULT_MAX_FPS          30
 
 struct imx219 {
   struct mutex      imx219_camera_lock;
@@ -447,6 +448,7 @@ exit:
   return err;
 }
 
+
 static int imx219_g_input_status(struct v4l2_subdev *sd, u32 *status)
 {
   struct i2c_client *client = v4l2_get_subdevdata(sd);
@@ -695,6 +697,7 @@ static int imx219_ctrls_init(struct imx219 *priv)
 
   dev_info(&client->dev, "%s++\n", __func__);
 
+  err = imx219_write_table(priv, mode_table[IMX219_MODE_COMMON]);
   num_ctrls = ARRAY_SIZE(ctrl_config_list);
   v4l2_ctrl_handler_init(&priv->ctrl_handler, num_ctrls);
 
@@ -899,6 +902,7 @@ static int imx219_probe(struct i2c_client *client,
   common_data->fmt_width    = common_data->def_width;
   common_data->fmt_height   = common_data->def_height;
   common_data->def_clk_freq = IMX219_DEFAULT_CLK_FREQ;
+	common_data->fmt_maxfps		= IMX219_DEFAULT_MAX_FPS;
 
   priv->i2c_client          = client;
   priv->s_data              = common_data;

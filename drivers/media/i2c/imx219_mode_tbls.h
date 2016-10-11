@@ -309,21 +309,18 @@ static imx219_reg *mode_table[] = {
   [IMX219_MODE_STOP_STREAM]   = imx219_stop,
 };
 
-
 static const int imx219_30fps[] = {
-  1,
-  10,
   30,
+  10,
+  1,
 };
 
 static const int imx219_60fps[] = {
-  1,
-  10,
-  30,
   60,
+  30,
+  10,
+  1,
 };
-
-
 
 /*
 camera_common_frmfmt: {struct v4l2_frmsize_discrete size}, {const int *framerates}, {num_framerates}, {hdr_en}, {int  mode}
