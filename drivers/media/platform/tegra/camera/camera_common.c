@@ -430,6 +430,10 @@ int camera_common_try_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *mf)
 	s_data->fmt_maxfps = s_data->def_maxfps;
 
   dev_info(&client->dev, "%s: Using Sensor Mode: %d\n", __func__, s_data->sensor_mode_id);
+  dev_info(&client->dev, "%s: \tWidth:    %d\n", __func__, s_data->fmt_width);
+  dev_info(&client->dev, "%s: \tHeight:   %d\n", __func__, s_data->fmt_height);
+  dev_info(&client->dev, "%s: \tMAX FPS:  %d\n", __func__, s_data->fmt_maxfps);
+  dev_info(&client->dev, "%s: \tHDR En:   %d\n", __func__, hdr_en);
 
 	if (s_data->use_sensor_mode_id &&
 		s_data->sensor_mode_id >= 0 &&
@@ -441,10 +445,17 @@ int camera_common_try_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *mf)
 		s_data->fmt_height = mf->height;
 		s_data->fmt_maxfps = mf->maxframerate;
 	} else {
+    dev_info(&client->dev, "%s: Enumerating Through Sensors\n", __func__);
 		for (i = 0; i < s_data->numfmts; i++) {
+      dev_info(&client->dev, "%s: Looking at Sensor Mode: %d\n", __func__, i);
+      dev_info(&client->dev, "%s: \tWidth:    %d\n", __func__, frmfmt[i].size.width);
+      dev_info(&client->dev, "%s: \tHeight:   %d\n", __func__, frmfmt[i].size.height);
+      dev_info(&client->dev, "%s: \tMAX FPS:  %d\n", __func__, frmfmt[i].framerates[0]);
+      dev_info(&client->dev, "%s: \tHDR En:   %d\n", __func__, frmfmt[i].hdr_en);
+
 			if (mf->width == frmfmt[i].size.width &&
 				  mf->height == frmfmt[i].size.height &&
-					mf->maxframerate == frmfmt[i].framerates[0] &&
+					//mf->maxframerate == frmfmt[i].framerates[0] &&
 					hdr_en == frmfmt[i].hdr_en) {
 					s_data->mode = frmfmt[i].mode;
 					s_data->fmt_width = mf->width;
@@ -465,8 +476,9 @@ int camera_common_try_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *mf)
 		}
 	}
 	if (mf->code != V4L2_MBUS_FMT_SRGGB8_1X8 &&
-		mf->code != V4L2_MBUS_FMT_SRGGB10_1X10) {
+		  mf->code != V4L2_MBUS_FMT_SRGGB10_1X10) {
 		mf->code = V4L2_MBUS_FMT_SRGGB10_1X10;
+    dev_info(&client->dev, "%s: User attempted color code besides SRGGB10 or SRGGB8: %d\n", __func__);
 		err = -EINVAL;
 	}
 
