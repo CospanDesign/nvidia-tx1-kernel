@@ -409,13 +409,14 @@ int camera_common_try_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *mf)
 	int err = 0;
 	int i;
 
-	dev_dbg(&client->dev, "%s: size %i x %i\n", __func__,
+	dev_info(&client->dev, "%s: size %i x %i\n", __func__,
 		 mf->width, mf->height);
 
 	/* check hdr enable ctrl */
 	hdr_control.id = V4L2_CID_HDR_EN;
 
 	err = v4l2_g_ctrl(s_data->ctrl_handler, &hdr_control);
+  dev_info(&client->dev, "%s: got controls from v4l2_g_ctrl\n", __func__);
 	if (err < 0) {
 		dev_err(&client->dev, "could not find device ctrl.\n");
 		return err;
@@ -423,15 +424,17 @@ int camera_common_try_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *mf)
 
 	hdr_en = switch_ctrl_qmenu[hdr_control.value];
 
-	s_data->mode = s_data->def_mode;
+ 	s_data->mode = s_data->def_mode;
 	s_data->fmt_width = s_data->def_width;
 	s_data->fmt_height = s_data->def_height;
 	s_data->fmt_maxfps = s_data->def_maxfps;
 
+  dev_info(&client->dev, "%s: Using Sensor Mode: %d\n", __func__, s_data->sensor_mode_id);
+
 	if (s_data->use_sensor_mode_id &&
 		s_data->sensor_mode_id >= 0 &&
 		s_data->sensor_mode_id < s_data->numfmts) {
-		dev_dbg(&client->dev, "%s: use_sensor_mode_id %d\n",
+		dev_info(&client->dev, "%s: use_sensor_mode_id %d\n",
 				__func__, s_data->sensor_mode_id);
 		s_data->mode = frmfmt[s_data->sensor_mode_id].mode;
 		s_data->fmt_width = mf->width;
@@ -440,14 +443,14 @@ int camera_common_try_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *mf)
 	} else {
 		for (i = 0; i < s_data->numfmts; i++) {
 			if (mf->width == frmfmt[i].size.width &&
-				mf->height == frmfmt[i].size.height &&
-				mf->maxframerate == frmfmt[i].framerates[0] &&
-				hdr_en == frmfmt[i].hdr_en) {
-				s_data->mode = frmfmt[i].mode;
-				s_data->fmt_width = mf->width;
-				s_data->fmt_height = mf->height;
-				s_data->fmt_maxfps = mf->maxframerate;
-				break;
+				  mf->height == frmfmt[i].size.height &&
+					mf->maxframerate == frmfmt[i].framerates[0] &&
+					hdr_en == frmfmt[i].hdr_en) {
+					s_data->mode = frmfmt[i].mode;
+					s_data->fmt_width = mf->width;
+					s_data->fmt_height = mf->height;
+					s_data->fmt_maxfps = mf->maxframerate;
+					break;
 			}
 		}
 
@@ -455,7 +458,7 @@ int camera_common_try_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *mf)
 			mf->width = s_data->fmt_width;
 			mf->height = s_data->fmt_height;
 			mf->maxframerate = s_data->fmt_maxfps;
-			dev_dbg(&client->dev,
+			dev_info(&client->dev,
 				"%s: invalid resolution supplied(set mode) %d %d %d\n",
 				__func__, mf->width,
 				mf->height, mf->maxframerate);
