@@ -17,6 +17,7 @@
 #include <linux/platform_device.h>
 #include <media/imx214.h>
 #include <media/ov5693.h>
+#include <media/ov5647.h>
 #include <media/soc_camera.h>
 #include <media/soc_camera_platform.h>
 #include <media/tegra_v4l2_camera.h>
@@ -167,6 +168,53 @@ static struct platform_device t210ref_imx219_bottom_soc_camera_device = {
 };
 
 #endif
+
+#if IS_ENABLED(CONFIG_VIDEO_OV5647)
+static int t210ref_ov5647_power(struct device *dev, int enable)
+{
+	return 0;
+}
+
+static struct camera_common_pdata t210ref_ov5647_data;
+
+static struct i2c_board_info t210ref_ov5647_camera_i2c_device = {
+	I2C_BOARD_INFO("ov5647", 0x36),
+};
+
+static struct tegra_camera_platform_data t210ref_ov5647_camera_platform_data = {
+	.flip_v			      = 0,
+	.flip_h			      = 0,
+	.port			        = TEGRA_CAMERA_PORT_CSI_A,
+	.lanes			      = 2,
+	.continuous_clk		= 0,
+};
+
+static struct soc_camera_link ov5647_iclink = {
+	.bus_id		      = 0, /* This must match the .id of tegra_vi01_device */
+	.board_info	    = &t210ref_ov5647_camera_i2c_device,
+	.module_name	  = "ov5647",
+	.i2c_adapter_id	= 6, /* VI2 I2C controller */
+	.power		      = t210ref_ov5647_power,
+	.priv		        = &t210ref_ov5647_camera_platform_data,
+	.dev_priv	      = &t210ref_ov5647_data,
+};
+
+static struct platform_device t210ref_ov5647_bottom_soc_camera_device = {
+	.name	= "soc-camera-pdrv",
+	.id	= 0,
+	.dev	= {
+		.platform_data = &ov5647_iclink,
+	},
+};
+
+#endif
+
+
+
+
+
+
+
 
 #if IS_ENABLED(CONFIG_SOC_CAMERA_OV5693)
 static int t210ref_ov5693_power(struct device *dev, int enable)
@@ -535,6 +583,32 @@ int t210ref_camera_init(void)
 	}
 
 #endif
+#if IS_ENABLED(CONFIG_VIDEO_OV5647)
+  if (of_machine_is_compatible("nvidia,mit-uav-reva")) {
+    pr_info("%s: MIT UAV REVA Detected\n", __func__);
+
+		//Register all camera
+
+		//Register Front Left Camera
+		//platform_device_register(&t210ref_ov5647_front_left_soc_camera_device);
+
+		//Register Front Right Camera
+		//platform_device_register(&t210ref_ov5647_front_right_soc_camera_device);
+
+		//Register Bottom Camera
+    if (of_find_node_by_name(NULL, "ov5647_a"))
+    {
+      pr_info("%s: Detected OV5647 in Device Tree\n", __func__);
+		  platform_device_register(&t210ref_ov5647_bottom_soc_camera_device);
+    }
+    else
+      pr_warning("%s: Did not find ov5647_a in device tree\n", __func__);
+	}
+
+#endif
+
+
+
 
 #if IS_ENABLED(CONFIG_SOC_CAMERA_IMX214)
 	platform_device_register(&t210ref_imx214_soc_camera_device);
