@@ -21,6 +21,7 @@
 	compatible = "nvidia,mit-uav-reva", "nvidia,tegra210";
 	nvidia,dtsfilename = __FILE__;
 
+
 	#address-cells = <2>;
 	#size-cells = <2>;
 
