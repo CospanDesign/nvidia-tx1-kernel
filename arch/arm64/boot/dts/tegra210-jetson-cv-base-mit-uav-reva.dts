@@ -18,7 +18,8 @@
 
 #include "tegra210-common.dtsi"
 #include "tegra210-platforms/tegra210-audio.dtsi"
-#include "tegra210-platforms/tegra210-jetson-cv-power-tree-p2597-2180-a00.dtsi"
+//#include "tegra210-platforms/tegra210-jetson-cv-power-tree-p2597-2180-a00.dtsi"
+#include "tegra210-platforms/tegra210-mit-uav-revb-power-tree.dtsi"
 //#include "tegra210-platforms/tegra210-jetson-cv-pinmux-p2597-2180-a00.dtsi"
 #include "tegra210-platforms/tegra210-mit-uav-reva-pinmux.dtsi"
 #include "tegra210-platforms/tegra210-pinmux-drive-sdmmc-common.dtsi"
@@ -50,7 +51,7 @@
 #include "tegra210-plugin-manager/tegra210-jetson-cv-eeprom-manager.dtsi"
 //#include "tegra210-plugin-manager/tegra210-jetson-cv-plugin-manager.dtsi"
 #include "tegra210-plugin-manager/tegra210-mit-uav-reva-plugin-manager.dtsi"
-#include "tegra210-platforms/tegra210-camera-mit-uav-reva.dtsi"
+#include "tegra210-platforms/tegra210-camera-mit-uav-reva-ov5647.dtsi"
 
 / {
 	model = "jetson_cv";
@@ -332,7 +333,21 @@
       nvidia,tx-clk-tap-delay = <0x0>;
 		};
 	};
-
+	spi@7000d600 {
+		status = "okay";
+		spi@0 {
+      #address-cells = <0x1>;
+      #size-cells = <0x0>;
+			compatible = "spidev";
+			reg = <0>;
+			spi-max-frequency = <1000000>;
+      nvidia,enable-hw-based-cs;
+      nvidia,cs-setup-clk-count = <0x1e>;
+      nvidia,cs-hold-clk-count = <0x1e>;
+      nvidia,rx-clk-tap-delay = <0x1f>;
+      nvidia,tx-clk-tap-delay = <0x0>;
+		};
+	};
 	spi@7000d400 {
 		status = "okay";
 		spi@0 {
