@@ -53,11 +53,11 @@
 				vi_port0: port@0 {
 					status = "okay";
 					reg = <0>;
-					imx219_vi_in0: endpoint {
+					ov5647_vi_in0: endpoint {
 						status = "okay";
 						csi-port = <0>;
 						bus-width = <2>;
-						remote-endpoint = <&imx219_out0>;
+						remote-endpoint = <&ov5647_out0>;
 					};
 				};
 			};
@@ -67,18 +67,19 @@
 			status = "okay";
 			#address-cells = <1>;
 			#size-cells = <0>;
-			imx219_a@10 {
-				compatible = "nvidia,imx219";
+			ov5647_a@36 {
+				compatible = "nvidia,ov5647";
 				/* I2C device address */
-				reg = <0x10>;
+				reg = <0x36>;
 				reset-gpios = <&gpio CAM0_RST_L GPIO_ACTIVE_LOW>;
 
-				/* Physical dimensions of sensor */
-				physical_w = "5.095";
-				physical_h = "4.930";
+		    /* Physical dimensions of sensor */
+				physical_w = "3.674";
+				physical_h = "2.738";
+
 
 				/* Sensor Model */
-				sensor_model ="imx219";
+				sensor_model ="ov5647";
 
 				/* Define any required hw resources needed by driver */
 				/* ie. clocks, io pins, power sources */
@@ -174,87 +175,62 @@
 				* If sensor does not support embedded metadata value should be 0.
 				*/
 
-				mode0 { // IMX219_MODE_1920X1080
+				mode0 { // OV5647_MODE_1920X1080
 					mclk_khz = "24000";
-					mclk_multiplier = "38";
-					pix_clk_hz = "912000000";
-
 					num_lanes = "2";
+					mclk_multiplier = "49.0";
+					pix_clk_hz = "1176000000";
+
 					tegra_sinterface = "serial_a";
 					discontinuous_clk = "yes";
 					cil_settletime = "0";
-					pixel_t = "bayer_rggb";
-					readout_orientation = "90";
+					pixel_t = "bayer_bggr";
+					readout_orientation = "0";
 					inherent_gain = "1";
 
+					//active_w = "2322";
+					//active_h = "1104";
 					active_w = "1920";
 					active_h = "1080";
 
-					line_length = "3448";
+					line_length = "1927";
 
 					min_gain_val = "1.0";
-					max_gain_val = "8.0";
+					max_gain_val = "16.0";
 					min_hdr_ratio = "1";
 					max_hdr_ratio = "1";
 					min_framerate = "1";
 					max_framerate = "30";
-					min_exp_time = "24";
+					min_exp_time = "25";
 					max_exp_time = "683709";
 				};
-				mode1 { // IMX219_MODE_1280X720
+				mode1 { // OV5647_MODE_1280X720
 					mclk_khz = "24000";
-					mclk_multiplier = "38";
-					pix_clk_hz = "912000000";
-
 					num_lanes = "2";
+					mclk_multiplier = "52.5";
+					pix_clk_hz = "1260000000";
+
 					tegra_sinterface = "serial_a";
 					discontinuous_clk = "yes";
 					cil_settletime = "0";
-					pixel_t = "bayer_rggb";
-					readout_orientation = "90";
+					pixel_t = "bayer_bggr";
+					readout_orientation = "0";
 					inherent_gain = "1";
 
 					active_w = "1280";
 					active_h = "720";
 
-					line_length = "3448";
+					line_length = "2623";
 
 					min_gain_val = "1.0";
-					max_gain_val = "8.0";
+					max_gain_val = "16.0";
 					min_hdr_ratio = "1";
 					max_hdr_ratio = "1";
 					min_framerate = "1";
 					max_framerate = "60";
-					min_exp_time = "11";
+					min_exp_time = "22";
 					max_exp_time = "683709";
-				};
-				mode2 { // IMX219_MODE_640X480
 
-					mclk_khz = "24000";
-					mclk_multiplier = "38";
-					pix_clk_hz = "912000000";
-
-					num_lanes = "2";
-					tegra_sinterface = "serial_a";
-					discontinuous_clk = "yes";
-					cil_settletime = "0";
-					pixel_t = "bayer_rggb";
-					readout_orientation = "90";
-					inherent_gain = "1";
-
-					active_w = "1640";
-					active_h = "1232";
-
-					line_length = "3448";
-
-					min_gain_val = "1.0";
-					max_gain_val = "8.0";
-					min_hdr_ratio = "1";
-					max_hdr_ratio = "1";
-					min_framerate = "1";
-					max_framerate = "60";
-					min_exp_time = "11";
-					max_exp_time = "683709";
 				};
 
 				ports {
@@ -263,10 +239,10 @@
 
 					port@0 {
 						reg = <0>;
-						imx219_out0: endpoint {
+						ov5647_out0: endpoint {
 							csi-port = <0>;
 							bus-width = <2>;
-							remote-endpoint = <&imx219_vi_in0>;
+							remote-endpoint = <&ov5647_vi_in0>;
 						};
 					};
 				};
@@ -287,16 +263,16 @@
 		*/
 		modules {
 			cam_module0: module0 {
-				badge = "imx219_back";
+				badge = "uav_back_ov5647";
 				position = "rear";
 				orientation = "1";
 				cam_module0_drivernode0: drivernode0 {
 					/* Declare PCL support driver (classically known as guid)  */
 					pcl_id = "v4l2_sensor";
 					/* Driver's v4l2 device name */
-					devname = "imx219 6-001a";
+					devname = "ov5647 6-0036";
 					/* Declare the device-tree hierarchy to driver instance */
-					proc-device-tree = "/proc/device-tree/host1x/i2c@546c0000/imx219_a@10";
+					proc-device-tree = "/proc/device-tree/host1x/i2c@546c0000/ov5647_a@36";
           status = "okay";
 				};
         cam_module0_dirvernode1: drivernode1 {

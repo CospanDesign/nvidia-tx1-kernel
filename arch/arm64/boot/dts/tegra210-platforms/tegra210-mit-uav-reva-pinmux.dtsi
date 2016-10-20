@@ -1097,31 +1097,31 @@
 
 			spi1_mosi_pc0 {
 				nvidia,pins = "spi1_mosi_pc0";
-				nvidia,function = "rsvd1";
-				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+				nvidia,function = "spi1";
+				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
 
 			spi1_miso_pc1 {
 				nvidia,pins = "spi1_miso_pc1";
-				nvidia,function = "rsvd1";
-				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+				nvidia,function = "spi1";
+				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
 
 			spi1_sck_pc2 {
 				nvidia,pins = "spi1_sck_pc2";
-				nvidia,function = "rsvd1";
-				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+				nvidia,function = "spi1";
+				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
 
 			spi1_cs0_pc3 {
 				nvidia,pins = "spi1_cs0_pc3";
-				nvidia,function = "rsvd1";
+				nvidia,function = "spi1";
 				nvidia,pull = <TEGRA_PIN_PULL_UP>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
@@ -1129,10 +1129,11 @@
 
 			spi1_cs1_pc4 {
 				nvidia,pins = "spi1_cs1_pc4";
-				nvidia,function = "rsvd1";
+				nvidia,function = "spi1";
 				nvidia,pull = <TEGRA_PIN_PULL_UP>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+
 			};
 
 			pz0 {
