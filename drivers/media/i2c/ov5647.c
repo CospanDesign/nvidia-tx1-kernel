@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <dt-bindings/gpio/tegra-gpio.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 #include <linux/gpio.h>
@@ -26,6 +27,7 @@
 #include <linux/of_device.h>
 #include <linux/of_gpio.h>
 
+#include <media/v4l2-chip-ident.h>
 #include <media/camera_common.h>
 #include <media/ov5647.h>
 
@@ -33,22 +35,26 @@
 
 #include "ov5647_mode_tbls.h"
 
-#define OV5647_MAX_COARSE_DIFF					7
+//#define OV5647_MAX_COARSE_DIFF					7
+#define OV5647_MAX_COARSE_DIFF					8
 
 #define OV5647_GAIN_SHIFT		            8
 #define OV5647_REAL_GAIN_SHIFT					4
 #define OV5647_MIN_GAIN		              (1 << OV5647_GAIN_SHIFT)
 #define OV5647_MAX_GAIN		              (16 << OV5647_GAIN_SHIFT)
 #define OV5647_MAX_UNREAL_GAIN	        (0x0F80)
-#define OV5647_MIN_FRAME_LENGTH	        (0x0)
+//#define OV5647_MIN_FRAME_LENGTH	        (0x0)
+#define OV5647_MIN_FRAME_LENGTH	        (0)
 #define OV5647_MAX_FRAME_LENGTH	        (0x7fff)
-//#define OV5647_MIN_EXPOSURE_COARSE	  (0x0002)
-#define OV5647_MIN_EXPOSURE_COARSE	    (0x0016)
+#define OV5647_MIN_EXPOSURE_COARSE	    (0x0002)
+//#define OV5647_MIN_EXPOSURE_COARSE	    (0x0016)
 #define OV5647_MAX_EXPOSURE_COARSE	\
 	(OV5647_MAX_FRAME_LENGTH-OV5647_MAX_COARSE_DIFF)
 
 #define OV5647_DEFAULT_GAIN		          OV5647_MIN_GAIN
-#define OV5647_DEFAULT_FRAME_LENGTH	    (0x07B0)
+//#define OV5647_DEFAULT_FRAME_LENGTH	    (0x07B0)
+//#define OV5647_DEFAULT_FRAME_LENGTH	      (1104)
+#define OV5647_DEFAULT_FRAME_LENGTH	      (0x07C0)
 #define OV5647_DEFAULT_EXPOSURE_COARSE	\
 	(OV5647_DEFAULT_FRAME_LENGTH-OV5647_MAX_COARSE_DIFF)
 
@@ -57,6 +63,7 @@
 #define OV5647_DEFAULT_HEIGHT	          1080
 #define OV5647_DEFAULT_DATAFMT	        V4L2_MBUS_FMT_SRGGB10_1X10
 #define OV5647_DEFAULT_CLK_FREQ	        24000000
+#define OV5647_DEFAULT_MAX_FPS          30
 
 struct ov5647 {
 	struct camera_common_power_rail	power;
@@ -161,8 +168,6 @@ static struct v4l2_ctrl_config ctrl_config_list[] = {
 		.def = 0,
 		.qmenu_int = switch_ctrl_qmenu,
 	},
-*/
-/*
 	{
 		.ops = &ov5647_ctrl_ops,
 		.id = V4L2_CID_EEPROM_DATA,
@@ -173,8 +178,6 @@ static struct v4l2_ctrl_config ctrl_config_list[] = {
 		.max = OV5647_EEPROM_STR_SIZE,
 		.step = 2,
 	},
-*/
-/*
 	{
 		.ops = &ov5647_ctrl_ops,
 		.id = V4L2_CID_OTP_DATA,
@@ -185,8 +188,6 @@ static struct v4l2_ctrl_config ctrl_config_list[] = {
 		.max = OV5647_OTP_STR_SIZE,
 		.step = 2,
 	},
-*/
-/*
 	{
 		.ops = &ov5647_ctrl_ops,
 		.id = V4L2_CID_FUSE_ID,
@@ -284,18 +285,24 @@ static int ov5647_write_table(struct ov5647 *priv,
 					 OV5647_TABLE_END);
 }
 
+/*
 static void ov5647_gpio_set(struct ov5647 *priv,
 			    unsigned int gpio, int val)
 {
 	if (priv->pdata->use_cam_gpio)
+  {
+	  dev_info(&priv->i2c_client->dev, "%s: Cam GPIO set gpio value: %d\n", __func__, val);
 		cam_gpio_ctrl(priv->i2c_client, gpio, val, 1);
+  }
 	else {
+	  dev_info(&priv->i2c_client->dev, "%s: Not Cam GPIO set gpio value: %d\n", __func__, val);
 		if (gpio_cansleep(gpio))
 			gpio_set_value_cansleep(gpio, val);
 		else
 			gpio_set_value(gpio, val);
 	}
 }
+*/
 
 static int ov5647_power_on(struct camera_common_data *s_data)
 {
@@ -303,7 +310,7 @@ static int ov5647_power_on(struct camera_common_data *s_data)
 	struct ov5647 *priv = (struct ov5647 *)s_data->priv;
 	struct camera_common_power_rail *pw = &priv->power;
 
-	dev_dbg(&priv->i2c_client->dev, "%s: power on\n", __func__);
+	dev_info(&priv->i2c_client->dev, "%s: power on\n", __func__);
 
 	if (priv->pdata && priv->pdata->power_on) {
 		err = priv->pdata->power_on(pw);
@@ -314,88 +321,54 @@ static int ov5647_power_on(struct camera_common_data *s_data)
 		return err;
 	}
 
-	/* sleeps calls in the sequence below are for internal device
-	 * signal propagation as specified by sensor vendor */
+  if (gpio_cansleep(pw->reset_gpio))
+    gpio_set_value_cansleep(pw->reset_gpio, 0);
+  else
+    gpio_set_value(pw->reset_gpio, 0);
+  usleep_range(10, 20);
 
-	/*
-	if (pw->avdd)
-		err = regulator_enable(pw->avdd);
-	if (err)
-		goto ov5647_avdd_fail;
+  usleep_range(1, 2);
+  if (gpio_cansleep(pw->reset_gpio))
+    gpio_set_value_cansleep(pw->reset_gpio, 1);
+  else
+    gpio_set_value(pw->reset_gpio, 1);
 
-	if (pw->iovdd)
-		err = regulator_enable(pw->iovdd);
-	if (err)
-		goto ov5647_iovdd_fail;
-	*/
-
-	usleep_range(1, 2);
-	/*
-	if (pw->pwdn_gpio)
-		ov5647_gpio_set(priv, pw->pwdn_gpio, 1);
-	*/
-
-	/* datasheet 2.9: reset requires ~2ms settling time
-	 * a power on reset is generated after core power becomes stable */
-	usleep_range(2000, 2010);
-
-	if (pw->reset_gpio)
-		ov5647_gpio_set(priv, pw->reset_gpio, 1);
+  usleep_range(1, 2);
+  clk_set_rate(pw->mclk, OV5647_DEFAULT_CLK_FREQ);
+  clk_prepare_enable(pw->mclk);
 
 	/* datasheet fig 2-9: t3 */
-	usleep_range(1350, 1360);
+	//usleep_range(1350, 1360);
+  usleep_range(7400, 7410);
 
 	pw->state = SWITCH_ON;
 	return 0;
 
-/*
-ov5647_iovdd_fail:
-	regulator_disable(pw->avdd);
-
-ov5647_avdd_fail:
-	pr_err("%s failed.\n", __func__);
-	return -ENODEV;
-*/
 }
 
 static int ov5647_power_off(struct camera_common_data *s_data)
 {
-	int err = 0;
+	//int err = 0;
 	struct ov5647 *priv = (struct ov5647 *)s_data->priv;
 	struct camera_common_power_rail *pw = &priv->power;
 
-	dev_dbg(&priv->i2c_client->dev, "%s: power off\n", __func__);
+	dev_info(&priv->i2c_client->dev, "%s: power off\n", __func__);
 
-	if (priv->pdata && priv->pdata->power_on) {
-		err = priv->pdata->power_off(pw);
-		if (!err)
-			pw->state = SWITCH_OFF;
-		else
-			pr_err("%s failed.\n", __func__);
-		return err;
-	}
 
-	/* sleeps calls in the sequence below are for internal device
-	 * signal propagation as specified by sensor vendor */
+  /*
+  usleep_range(1, 2);
+  if (gpio_cansleep(pw->reset_gpio))
+    gpio_set_value_cansleep(pw->reset_gpio, 0);
+  else
+    gpio_set_value(pw->reset_gpio, 0);
+  usleep_range(1, 2);
+  */
 
-	usleep_range(21, 25);
-/*
-	if (pw->pwdn_gpio)
-		ov5647_gpio_set(priv, pw->pwdn_gpio, 0);
-*/
-	usleep_range(1, 2);
-	if (pw->reset_gpio)
-		ov5647_gpio_set(priv, pw->reset_gpio, 0);
 
 	/* datasheet 2.9: reset requires ~2ms settling time*/
 	usleep_range(2000, 2010);
-
-/*
-	if (pw->iovdd)
-		regulator_disable(pw->iovdd);
-	if (pw->avdd)
-		regulator_disable(pw->avdd);
-*/
+  clk_disable_unprepare(pw->mclk);
+  pw->state = SWITCH_OFF;
 
 	return 0;
 }
@@ -495,7 +468,33 @@ static int ov5647_power_get(struct ov5647 *priv)
 
 static int ov5647_reset_camera(struct ov5647 *priv)
 {
-  return ov5647_write_table(priv, ov5647_reset);
+	struct camera_common_power_rail *pw = &priv->power;
+	dev_info(&priv->i2c_client->dev, "%s: Reset\n", __func__);
+	if (pw->reset_gpio)
+  {
+	  dev_info(&priv->i2c_client->dev, "%s: Reset Low\n", __func__);
+		//ov5647_gpio_set(priv, pw->reset_gpio, 0);
+		if (gpio_cansleep(pw->reset_gpio))
+			gpio_set_value_cansleep(pw->reset_gpio, 0);
+		else
+			gpio_set_value(pw->reset_gpio, 0);
+
+  }
+	usleep_range(2000, 2010);
+	if (pw->reset_gpio)
+  {
+	  dev_info(&priv->i2c_client->dev, "%s: Reset High\n", __func__);
+		//ov5647_gpio_set(priv, pw->reset_gpio, 1);
+		if (gpio_cansleep(pw->reset_gpio))
+			gpio_set_value_cansleep(pw->reset_gpio, 1);
+		else
+			gpio_set_value(pw->reset_gpio, 1);
+
+  }
+  usleep_range(7400, 7410);
+
+  //return ov5647_write_table(priv, ov5647_reset);
+  return 0;
 }
 
 static int ov5647_set_gain(struct ov5647 *priv, s32 val);
@@ -511,7 +510,7 @@ static int ov5647_s_stream(struct v4l2_subdev *sd, int enable)
 	struct v4l2_control control;
 	int err;
 
-	dev_dbg(&client->dev, "%s++\n", __func__);
+	dev_info(&client->dev, "%s++\n", __func__);
 
 	if (!enable) {
 		ov5647_update_ctrl_range(priv, OV5647_MAX_FRAME_LENGTH);
@@ -531,14 +530,14 @@ static int ov5647_s_stream(struct v4l2_subdev *sd, int enable)
 	err = v4l2_g_ctrl(&priv->ctrl_handler, &control);
 	err |= ov5647_set_gain(priv, control.value);
 	if (err)
-		dev_dbg(&client->dev, "%s: warning gain override failed\n",
+		dev_info(&client->dev, "%s: warning gain override failed\n",
 			__func__);
 
 	control.id = V4L2_CID_FRAME_LENGTH;
 	err = v4l2_g_ctrl(&priv->ctrl_handler, &control);
 	err |= ov5647_set_frame_length(priv, control.value);
 	if (err)
-		dev_dbg(&client->dev,
+		dev_info(&client->dev,
 			"%s: warning frame length override failed\n",
 			__func__);
 
@@ -546,7 +545,7 @@ static int ov5647_s_stream(struct v4l2_subdev *sd, int enable)
 	err = v4l2_g_ctrl(&priv->ctrl_handler, &control);
 	err |= ov5647_set_coarse_time(priv, control.value);
 	if (err)
-		dev_dbg(&client->dev,
+		dev_info(&client->dev,
 			"%s: warning coarse time override failed\n",
 			__func__);
 
@@ -554,7 +553,7 @@ static int ov5647_s_stream(struct v4l2_subdev *sd, int enable)
 	err = v4l2_g_ctrl(&priv->ctrl_handler, &control);
 	err |= ov5647_set_coarse_time_short(priv, control.value);
 	if (err)
-		dev_dbg(&client->dev,
+		dev_info(&client->dev,
 			"%s: warning coarse time short override failed\n",
 			__func__);
 
@@ -566,10 +565,10 @@ static int ov5647_s_stream(struct v4l2_subdev *sd, int enable)
 		err = ov5647_write_table(priv,
 			mode_table[OV5647_MODE_TEST_PATTERN]);
 
-	dev_dbg(&client->dev, "%s--\n", __func__);
+	dev_info(&client->dev, "%s--\n", __func__);
 	return 0;
 exit:
-	dev_dbg(&client->dev, "%s: error setting stream\n", __func__);
+	dev_info(&client->dev, "%s: error setting stream\n", __func__);
 	return err;
 }
 
@@ -653,36 +652,35 @@ static int ov5647_set_group_hold(struct ov5647 *priv)
 	if (priv->group_hold_en == true && gh_prev == SWITCH_OFF) {
 		/* enter group hold */
 		err = ov5647_write_reg(priv->s_data,
-				       OV5647_GROUP_HOLD_ADDR, 0x01);
+				       OV5647_GROUP_HOLD_ADDR, 0x00);
 		if (err)
 			goto fail;
 
 		priv->group_hold_prev = 1;
 
-		dev_dbg(&priv->i2c_client->dev,
+		dev_info(&priv->i2c_client->dev,
 			 "%s: enter group hold\n", __func__);
 	} else if (priv->group_hold_en == false && gh_prev == SWITCH_ON) {
 		/* leave group hold */
 		err = ov5647_write_reg(priv->s_data,
-				       OV5647_GROUP_HOLD_ADDR, 0x11);
+				       OV5647_GROUP_HOLD_ADDR, 0x10);
 		if (err)
 			goto fail;
 
 		err = ov5647_write_reg(priv->s_data,
-				       OV5647_GROUP_HOLD_ADDR, 0x61);
+				       OV5647_GROUP_HOLD_ADDR, 0xA0);
 		if (err)
 			goto fail;
 
 		priv->group_hold_prev = 0;
 
-		dev_dbg(&priv->i2c_client->dev,
+		dev_info(&priv->i2c_client->dev,
 			 "%s: leave group hold\n", __func__);
 	}
-
 	return 0;
 
 fail:
-	dev_dbg(&priv->i2c_client->dev,
+	dev_info(&priv->i2c_client->dev,
 		 "%s: Group hold control error\n", __func__);
 	return err;
 }
@@ -724,7 +722,7 @@ static int ov5647_set_gain(struct ov5647 *priv, s32 val)
 	gain = ov5647_to_real_gain((u32)val, OV5647_GAIN_SHIFT);
 
 	ov5647_get_gain_regs(reg_list, gain);
-	dev_dbg(&priv->i2c_client->dev,
+	dev_info(&priv->i2c_client->dev,
 		 "%s: gain %04x val: %04x\n", __func__, val, gain);
 
 	for (i = 0; i < GAIN_WRITE_LENGTH; i++) {
@@ -737,7 +735,7 @@ static int ov5647_set_gain(struct ov5647 *priv, s32 val)
 	return 0;
 
 fail:
-	dev_dbg(&priv->i2c_client->dev,
+	dev_info(&priv->i2c_client->dev,
 		 "%s: GAIN control error\n", __func__);
 	return err;
 }
@@ -792,7 +790,7 @@ static int ov5647_set_frame_length(struct ov5647 *priv, s32 val)
 	frame_length = (u32)val;
 
 	ov5647_get_frame_length_regs(reg_list, frame_length);
-	dev_dbg(&priv->i2c_client->dev,
+	dev_info(&priv->i2c_client->dev,
 		 "%s: val: %d\n", __func__, frame_length);
 
 	for (i = 0; i < 2; i++) {
@@ -806,7 +804,7 @@ static int ov5647_set_frame_length(struct ov5647 *priv, s32 val)
 	return 0;
 
 fail:
-	dev_dbg(&priv->i2c_client->dev,
+	dev_info(&priv->i2c_client->dev,
 		 "%s: FRAME_LENGTH control error\n", __func__);
 	return err;
 }
@@ -825,7 +823,7 @@ static int ov5647_set_coarse_time(struct ov5647 *priv, s32 val)
 	coarse_time = (u32)val;
 
 	ov5647_get_coarse_time_regs(reg_list, coarse_time);
-	dev_dbg(&priv->i2c_client->dev,
+	dev_info(&priv->i2c_client->dev,
 		 "%s: val: %d\n", __func__, coarse_time);
 
 	for (i = 0; i < COARSE_TIME_LENGTH; i++) {
@@ -838,7 +836,7 @@ static int ov5647_set_coarse_time(struct ov5647 *priv, s32 val)
 	return 0;
 
 fail:
-	dev_dbg(&priv->i2c_client->dev,
+	dev_info(&priv->i2c_client->dev,
 		 "%s: COARSE_TIME control error\n", __func__);
 	return err;
 }
@@ -848,8 +846,8 @@ static int ov5647_set_coarse_time_short(struct ov5647 *priv, s32 val)
 {
 	ov5647_reg reg_list[COARSE_TIME_SHORT_LENGTH];
 	int err;
-	struct v4l2_control hdr_control;
-	int hdr_en;
+	//struct v4l2_control hdr_control;
+	//int hdr_en;
 	u32 coarse_time_short;
 	int i;
 
@@ -857,6 +855,7 @@ static int ov5647_set_coarse_time_short(struct ov5647 *priv, s32 val)
 		ov5647_set_group_hold(priv);
 
 	// check hdr enable ctrl
+  /*
 	hdr_control.id = V4L2_CID_HDR_EN;
 
 	err = camera_common_g_ctrl(priv->s_data, &hdr_control);
@@ -869,11 +868,12 @@ static int ov5647_set_coarse_time_short(struct ov5647 *priv, s32 val)
 	hdr_en = switch_ctrl_qmenu[hdr_control.value];
 	if (hdr_en == SWITCH_OFF)
 		return 0;
+  */
 
 	coarse_time_short = (u32)val;
 
 	ov5647_get_coarse_time_short_regs(reg_list, coarse_time_short);
-	dev_dbg(&priv->i2c_client->dev,
+	dev_info(&priv->i2c_client->dev,
 		 "%s: val: %d\n", __func__, coarse_time_short);
 
 	for (i = 0; i < COARSE_TIME_SHORT_LENGTH; i++) {
@@ -886,7 +886,7 @@ static int ov5647_set_coarse_time_short(struct ov5647 *priv, s32 val)
 	return 0;
 
 fail:
-	dev_dbg(&priv->i2c_client->dev,
+	dev_info(&priv->i2c_client->dev,
 		 "%s: COARSE_TIME_SHORT control error\n", __func__);
 	return err;
 }
@@ -1165,15 +1165,12 @@ static int ov5647_s_ctrl(struct v4l2_ctrl *ctrl)
 			err = ov5647_set_group_hold(priv);
 		}
 		break;
-/*
 	case V4L2_CID_EEPROM_DATA:
-		if (!ctrl->string[0])
-			break;
-		err = ov5647_write_eeprom(priv, ctrl->string);
-		if (err)
-			return err;
-		break;
-*/
+    break;
+	case V4L2_CID_OTP_DATA:
+    break;
+	case V4L2_CID_FUSE_ID:
+    break;
 	case V4L2_CID_HDR_EN:
 		break;
 	default:
@@ -1193,7 +1190,7 @@ static int ov5647_ctrls_init(struct ov5647 *priv, bool eeprom_ctrl)
 	int err;
 	int i;
 
-	dev_dbg(&client->dev, "%s++\n", __func__);
+	dev_info(&client->dev, "%s++\n", __func__);
 
 	numctrls = ARRAY_SIZE(ctrl_config_list);
 	v4l2_ctrl_handler_init(&priv->ctrl_handler, numctrls);
@@ -1308,17 +1305,18 @@ static struct camera_common_pdata *ov5647_parse_dt(struct i2c_client *client)
 */
 
 	gpio = of_get_named_gpio(node, "reset-gpios", 0);
+  dev_info(&client->dev, "%s: OV5647 Reset GPIO: %d\n", __func__, gpio);
 	if (gpio < 0) {
 		/* reset-gpio is not absoluctly needed */
-		dev_dbg(&client->dev, "reset gpios not in DT\n");
+		dev_info(&client->dev, "reset gpios not in DT\n");
 		gpio = 0;
 	}
 	board_priv_pdata->reset_gpio = (unsigned int)gpio;
 
-/*
 	board_priv_pdata->use_cam_gpio =
 		of_property_read_bool(node, "cam,use-cam-gpio");
 
+/*
 	err = of_property_read_string(node, "avdd-reg",
 			&board_priv_pdata->regulators.avdd);
 	if (err) {
@@ -1353,7 +1351,7 @@ static int ov5647_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	struct ov5647 *priv = (struct ov5647 *)s_data->priv;
 
 
-	dev_dbg(&client->dev, "%s:\n", __func__);
+	dev_info(&client->dev, "%s:\n", __func__);
 
   err = ov5647_reset_camera(priv);
 	if (err)
@@ -1376,6 +1374,7 @@ static int ov5647_probe(struct i2c_client *client,
 	struct camera_common_data *common_data;
 	struct device_node *node = client->dev.of_node;
 	struct ov5647 *priv;
+  struct soc_camera_link *ov5647_iclink;
 	char debugfs_name[10];
 	int err;
 
@@ -1409,35 +1408,46 @@ static int ov5647_probe(struct i2c_client *client,
   //client->dev.of_node = of_find_node_by_name(NULL, node_name);
   client->dev.of_node = of_find_node_by_name(NULL, "ov5647_a");
 
-	priv->pdata = ov5647_parse_dt(client);
+  if (client->dev.of_node) {
+	  priv->pdata = ov5647_parse_dt(client);
+    dev_info(&client->dev, "Found and parsed of_node in DT\n");
+  }
+  else {
+    ov5647_iclink = client->dev.platform_data;
+    priv->pdata = ov5647_iclink->dev_priv;
+    dev_info(&client->dev, "Did not find of_node in DT\n");
+  }
+
 	if (!priv->pdata) {
 		dev_err(&client->dev, "%s: unable to get platform data\n", __func__);
 		return -EFAULT;
 	}
 
-	common_data->ops		= &ov5647_common_ops;
-	common_data->ctrl_handler	= &priv->ctrl_handler;
-	common_data->i2c_client		= client;
-	common_data->frmfmt		= ov5647_frmfmt;
-	common_data->colorfmt		= camera_common_find_datafmt(
+	common_data->ops          = &ov5647_common_ops;
+	common_data->ctrl_handler = &priv->ctrl_handler;
+	common_data->i2c_client   = client;
+	common_data->frmfmt       = ov5647_frmfmt;
+	common_data->colorfmt     = camera_common_find_datafmt(
 					  OV5647_DEFAULT_DATAFMT);
-	common_data->power		= &priv->power;
-	common_data->ctrls		= priv->ctrls;
-	common_data->priv		= (void *)priv;
-	common_data->numctrls		= ARRAY_SIZE(ctrl_config_list);
-	common_data->numfmts		= ARRAY_SIZE(ov5647_frmfmt);
-	common_data->def_mode		= OV5647_DEFAULT_MODE;
-	common_data->def_width		= OV5647_DEFAULT_WIDTH;
-	common_data->def_height		= OV5647_DEFAULT_HEIGHT;
-	common_data->fmt_width		= common_data->def_width;
-	common_data->fmt_height		= common_data->def_height;
-	common_data->def_clk_freq	= OV5647_DEFAULT_CLK_FREQ;
+	common_data->power        = &priv->power;
+	common_data->ctrls        = priv->ctrls;
+  common_data->ident        = V4L2_IDENT_OV5647;
+	common_data->priv         = (void *)priv;
+	common_data->numctrls     = ARRAY_SIZE(ctrl_config_list);
+	common_data->numfmts      = ARRAY_SIZE(ov5647_frmfmt);
+	common_data->def_mode     = OV5647_DEFAULT_MODE;
+	common_data->def_width    = OV5647_DEFAULT_WIDTH;
+	common_data->def_height   = OV5647_DEFAULT_HEIGHT;
+	common_data->fmt_width    = common_data->def_width;
+	common_data->fmt_height   = common_data->def_height;
+	common_data->def_clk_freq = OV5647_DEFAULT_CLK_FREQ;
+	common_data->fmt_maxfps		= OV5647_DEFAULT_MAX_FPS;
 
-	priv->i2c_client = client;
-	priv->s_data			= common_data;
-	priv->subdev			= &common_data->subdev;
-	priv->subdev->dev		= &client->dev;
-	priv->s_data->dev		= &client->dev;
+	priv->i2c_client          = client;
+	priv->s_data              = common_data;
+	priv->subdev              = &common_data->subdev;
+	priv->subdev->dev         = &client->dev;
+	priv->s_data->dev         = &client->dev;
 
 	err = ov5647_power_get(priv);
 	if (err)
@@ -1449,10 +1459,15 @@ static int ov5647_probe(struct i2c_client *client,
 		return err;
 	}
 	sprintf(debugfs_name, "ov5647_%c", common_data->csi_port + 'a');
-	dev_dbg(&client->dev, "%s: name %s\n", __func__, debugfs_name);
+	dev_info(&client->dev, "%s: name %s\n", __func__, debugfs_name);
 	camera_common_create_debugfs(common_data, debugfs_name);
 
 	v4l2_i2c_subdev_init(priv->subdev, client, &ov5647_subdev_ops);
+  err = ov5647_reset_camera(priv);
+	if (err)
+		dev_err(&client->dev,
+			"Failed to reset camera... continuing: %d\n", err);
+
 
 	/* eeprom interface */
 /*
@@ -1473,6 +1488,7 @@ static int ov5647_probe(struct i2c_client *client,
 			       V4L2_SUBDEV_FL_HAS_EVENTS;
 
 #if defined(CONFIG_MEDIA_CONTROLLER)
+	dev_info(&client->dev, "%s: Initialize media control\n", __func__);
 	priv->pad.flags = MEDIA_PAD_FL_SOURCE;
 	priv->subdev->entity.type = MEDIA_ENT_T_V4L2_SUBDEV_SENSOR;
 	priv->subdev->entity.ops = &ov5647_media_ops;
@@ -1487,9 +1503,7 @@ static int ov5647_probe(struct i2c_client *client,
 	if (err)
 		return err;
 
-	dev_dbg(&client->dev, "Detected OV5647 sensor\n");
-
-
+	dev_info(&client->dev, "Detected OV5647 sensor\n");
 	return 0;
 }
 
