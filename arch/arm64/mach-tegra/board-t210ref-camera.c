@@ -179,6 +179,7 @@ static struct camera_common_pdata t210ref_ov5647_data;
 
 static struct i2c_board_info t210ref_ov5647_camera_i2c_device = {
 	I2C_BOARD_INFO("ov5647", 0x36),
+	//I2C_BOARD_INFO("ov5647", 0x6C),
 };
 
 static struct tegra_camera_platform_data t210ref_ov5647_camera_platform_data = {

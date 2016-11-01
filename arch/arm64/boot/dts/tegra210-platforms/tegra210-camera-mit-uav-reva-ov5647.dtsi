@@ -178,8 +178,21 @@
 				mode0 { // OV5647_MODE_1920X1080
 					mclk_khz = "24000";
 					num_lanes = "2";
-					mclk_multiplier = "49.0";
-					pix_clk_hz = "1176000000";
+					//mclk_multiplier = "49.0";
+          //My Stuff
+					//pix_clk_hz = "1176000000";
+					//pix_clk_hz   =  "588000000";
+					//line_length = "2416";
+
+
+          //Their Stuff
+					mclk_multiplier = "17.0";
+					pix_clk_hz = "160000000";
+					line_length = "2688";
+          //Done
+
+
+
 
 					tegra_sinterface = "serial_a";
 					discontinuous_clk = "yes";
@@ -193,7 +206,7 @@
 					active_w = "1920";
 					active_h = "1080";
 
-					line_length = "1927";
+					//line_length = "1927";
 
 					min_gain_val = "1.0";
 					max_gain_val = "16.0";
@@ -220,7 +233,8 @@
 					active_w = "1280";
 					active_h = "720";
 
-					line_length = "2623";
+					//line_length = "2623";
+					line_length = "1896";
 
 					min_gain_val = "1.0";
 					max_gain_val = "16.0";
