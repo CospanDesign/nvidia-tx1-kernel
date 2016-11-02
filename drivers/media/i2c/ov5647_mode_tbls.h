@@ -58,9 +58,11 @@ static const ov5647_reg mode_1920x1080[] = {
   {0x0100, 0x00}, /* Power Down Mode, Keep all registers, just don't output anything*/
 
   //Start Test Pattern
+/*
   {0x503D, 0x80},
-  {0x503E, 0x00},
-  {0x5046, 0x01},
+  {0x503E, 0x80},
+  {0x5046, 0x80},
+*/
 
   /* Clock Configuration */
   {0x3034, 0x1A}, /* PLL Control 0: PLL Charge Pump, MIPI Bit Mode: 10 */
@@ -239,7 +241,11 @@ static const ov5647_reg mode_1920x1080[] = {
                   /* BIT[0]: Manually set clock lanes to low power mode */
 
   {0x4801, 0x0C},	//LSB First
-	//{0x480A, 0x04},	//Reverse Bit Order
+  //{0x4801, 0x04},
+  //{0x4801, 0x13},
+  //{0x4801, 0x34}, /* MIPI Control: */ //???	//NORMAL
+  //{0x4801, 0x04}, /* MIPI Control: */ //???	//NORMAL
+  //{0x4801, 0x0B}, /* MIPI Control 1:*/
 
   {0x3503, 0x03}, /* Manual Control: Gain Latch Timing Delay: 0, VTS: Auto, AGC: Manual, AEC: Manual */
 	{0x3022, 0x00},
