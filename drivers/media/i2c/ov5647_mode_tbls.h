@@ -66,11 +66,10 @@ static const ov5647_reg mode_1920x1080[] = {
 
   /* Clock Configuration */
   {0x3034, 0x1A}, /* PLL Control 0: PLL Charge Pump, MIPI Bit Mode: 10 */
-  //{0x3034, 0x11}, /* PLL Control 0: PLL Charge Pump, MIPI Bit Mode: 10 */
   {0x3035, 0x21}, /* PLL Control 1: System Clock Divider 2, Scale Divider (1)*/
                   /*  Sys clock divider: 2 */
   {0x3036, 0x62}, /* PLL Multiplier: 98 */
-  //{0x3036, 0x31}, /* PLL Multiplier: 49 */
+  //{0x3036, 0x31}, /* PLL Multiplier: 49 */	//XXX: This didn't work (?? TOO SLOW ??)
   {0x303C, 0x11}, /* PLL Control 2 PLL CP, PLL SYS DIV = 1*/
   /* Clock = 24000 / 2 / 1 * 98 = 1.176 GHz */
 
@@ -102,8 +101,8 @@ static const ov5647_reg mode_1920x1080[] = {
   //{0x301D, 0xF0}, /* ??? */
 
 
-  {0x3A18, 0x00},/* Auto Exposure Ceiling 0x00F8 */
-  {0x3A19, 0xF8},
+  {0x3A18, 0x00},  {0x3A19, 0xF8},/* Auto Exposure Ceiling 0x00F8 */
+  
 
   {0x3C01, 0x80}, /* 50/60 Hertz Detection: Manual Mode */
 
@@ -160,7 +159,7 @@ static const ov5647_reg mode_1920x1080[] = {
 	{0x3810, 0x00}, {0x3811, 0x02}, //ISP X Window Offset:      0x0002: 2
 	{0x3812, 0x00}, {0x3813, 0x02}, //ISP Y Window Offset:      0x0002: 2
 
-	{0x3814, 0x11},                 //X_ODD_INC, X_EVEN_INC:    1, 1
+	{0x3814, 0x11},                 //X_ODD_INC, X_EVEN_INC:    1,1
 	{0x3815, 0x11},                 //Y_ODD_INC, Y_EVEN_INC:    1,1
 
 
@@ -188,10 +187,8 @@ static const ov5647_reg mode_1920x1080[] = {
 */
 
   //50/60Hz Filter
-  {0x3A08, 0x01}, // B50 Step
-  {0x3A09, 0x4B},
-  {0x3A0A, 0x01}, /* B60 Step */
-  {0x3A0B, 0x13},
+  {0x3A08, 0x01}, {0x3A09, 0x4B},// B50 Step
+  {0x3A0A, 0x01}, {0x3A0B, 0x13},/* B60 Step */
   {0x3A0D, 0x04}, /* B60 Max: 4 */
   {0x3A0E, 0x03}, /* B50 Max: 3 */
 
@@ -213,8 +210,8 @@ static const ov5647_reg mode_1920x1080[] = {
                   /* BIT[1]: Black Line Average Frame: True*/
                   /* BIT[0]: BLC Enable: False*/
 
-  //{0x4837, 0x19}, /* Period of PCLK2X, PCLK_DIV = 1 and 1-bit Decimal: 25 */
-  {0x4837, 0x0A}, /* Period of PCLK2X, PCLK_DIV = 1 and 1-bit Decimal: 25 */
+  //{0x4837, 0x19}, /* Period of PCLK2X, PCLK_DIV = 1 and 1-bit Decimal: 25 */ //XXX: DIDN'T MAKE MUCH DIFFERENCE
+  {0x4837, 0x0A}, /* Period of PCLK2X, PCLK_DIV = 1 and 1-bit Decimal: 10 */
   //{0x4837, 0x15}, /* Period of PCLK2X, PCLK_DIV = 1 and 1-bit Decimal: 25 */
 
   //{0x4800, 0x34}, /* MIPI Control: */ //???	//NORMAL
@@ -254,7 +251,7 @@ static const ov5647_reg mode_1920x1080[] = {
   // Binning
   {0x3820, 0x00}, /* Vertical Binning: False */
   //{0x3821, 0x02}, /* Horizontal Binning: False, Mirror SNR */
-  {0x3821, 0x02}, /* Horizontal Binning: False, Mirror SNR */
+  {0x3821, 0x00}, /* Horizontal Binning: False, Don't Mirror SNR */
   {OV5647_TABLE_END, 0x0000}
 };
 
@@ -424,7 +421,10 @@ static const ov5647_reg mode_1280x720[] = {
 	//TEST:
   //{0x4801, 0x08}, /* MIPI Control 1:*/
 
-  {0x3503, 0x03}, /* Manual Control: Gain Latch Timing Delay: 0, VTS: Auto, AGC: Manual, AEC: Manual */
+  //{0x3503, 0x03}, /* Manual Control: Gain Latch Timing Delay: 0, VTS: Auto, AGC: Manual, AEC: Manual */
+  {0x3503, 0x07}, /* Manual Control: Gain Latch Timing Delay: 0, VTS: Auto, AGC: Manual, AEC: Manual */
+  {0x350C, 0x00}, /* Manual Control: Gain Latch Timing Delay: Datasheet says "set to 0" */
+  {0x350D, 0x00}, /* Manual Control: Gain Latch Timing Delay: Datasheet says "set to 0" */
 
   // Binning
   {0x3820, 0x00}, /* Vertical Binning: False */

@@ -38,15 +38,14 @@
 //#define OV5647_MAX_COARSE_DIFF					7
 #define OV5647_MAX_COARSE_DIFF					8
 
-#define OV5647_GAIN_SHIFT		            8
-#define OV5647_REAL_GAIN_SHIFT					4
-#define OV5647_MIN_GAIN		              (1 << OV5647_GAIN_SHIFT)
-#define OV5647_MAX_GAIN		              (16 << OV5647_GAIN_SHIFT)
+#define OV5647_GAIN_SHIFT		            0
+#define OV5647_MIN_GAIN		              0x00
+#define OV5647_MAX_GAIN		              0x3FF
 #define OV5647_MAX_UNREAL_GAIN	        (0x0F80)
 //#define OV5647_MIN_FRAME_LENGTH	        (0x0)
 #define OV5647_MIN_FRAME_LENGTH	        (0)
-#define OV5647_MAX_FRAME_LENGTH	        (0x7fff)
-#define OV5647_MIN_EXPOSURE_COARSE	    (0x0002)
+#define OV5647_MAX_FRAME_LENGTH	        (0x3fff)
+#define OV5647_MIN_EXPOSURE_COARSE	    16
 //#define OV5647_MIN_EXPOSURE_COARSE	    (0x0016)
 #define OV5647_MAX_EXPOSURE_COARSE	\
 	(OV5647_MAX_FRAME_LENGTH-OV5647_MAX_COARSE_DIFF)
@@ -55,8 +54,8 @@
 //#define OV5647_DEFAULT_FRAME_LENGTH	    (0x07B0)
 //#define OV5647_DEFAULT_FRAME_LENGTH	      (1104)
 #define OV5647_DEFAULT_FRAME_LENGTH	      (0x07C0)
-#define OV5647_DEFAULT_EXPOSURE_COARSE	\
-	(OV5647_DEFAULT_FRAME_LENGTH-OV5647_MAX_COARSE_DIFF)
+//#define OV5647_DEFAULT_EXPOSURE_COARSE	OV5647_DEFAULT_FRAME_LENGTH-OV5647_MAX_COARSE_DIFF)
+#define OV5647_DEFAULT_EXPOSURE_COARSE	100
 
 #define OV5647_DEFAULT_MODE	            OV5647_MODE_1920X1080
 #define OV5647_DEFAULT_WIDTH	          1920
@@ -156,7 +155,6 @@ static struct v4l2_ctrl_config ctrl_config_list[] = {
 		.def = 0,
 		.qmenu_int = switch_ctrl_qmenu,
 	},
-/*
 	{
 		.ops = &ov5647_ctrl_ops,
 		.id = V4L2_CID_HDR_EN,
@@ -168,6 +166,7 @@ static struct v4l2_ctrl_config ctrl_config_list[] = {
 		.def = 0,
 		.qmenu_int = switch_ctrl_qmenu,
 	},
+/*
 	{
 		.ops = &ov5647_ctrl_ops,
 		.id = V4L2_CID_EEPROM_DATA,
@@ -549,6 +548,7 @@ static int ov5647_s_stream(struct v4l2_subdev *sd, int enable)
 			"%s: warning coarse time override failed\n",
 			__func__);
 
+  /*
 	control.id = V4L2_CID_COARSE_TIME_SHORT;
 	err = v4l2_g_ctrl(&priv->ctrl_handler, &control);
 	err |= ov5647_set_coarse_time_short(priv, control.value);
@@ -556,6 +556,7 @@ static int ov5647_s_stream(struct v4l2_subdev *sd, int enable)
 		dev_info(&client->dev,
 			"%s: warning coarse time short override failed\n",
 			__func__);
+  */
 
 	err = ov5647_write_table(priv, mode_table[OV5647_MODE_START_STREAM]);
 	if (err)
@@ -685,6 +686,7 @@ fail:
 	return err;
 }
 
+/*
 static u16 ov5647_to_real_gain(u32 rep, int shift)
 {
 	u16 gain;
@@ -700,11 +702,11 @@ static u16 ov5647_to_real_gain(u32 rep, int shift)
 	gain_int = (int)(rep >> shift);
 	gain_dec = (int)(rep & ~(0xffff << shift));
 
-	/* derived from formulat gain = (x * 16 + 0.5) */
 	gain = ((gain_int * min_int + gain_dec) * 32 + min_int) / (2 * min_int);
 
 	return gain;
 }
+*/
 
 #define GAIN_WRITE_LENGTH 2
 static int ov5647_set_gain(struct ov5647 *priv, s32 val)
@@ -719,7 +721,8 @@ static int ov5647_set_gain(struct ov5647 *priv, s32 val)
 		ov5647_set_group_hold(priv);
 
 	/* translate value */
-	gain = ov5647_to_real_gain((u32)val, OV5647_GAIN_SHIFT);
+	//gain = ov5647_to_real_gain((u32)val, OV5647_GAIN_SHIFT);
+  gain = (u32)val;
 
 	ov5647_get_gain_regs(reg_list, gain);
 	dev_info(&priv->i2c_client->dev,
@@ -1174,7 +1177,7 @@ static int ov5647_s_ctrl(struct v4l2_ctrl *ctrl)
 	case V4L2_CID_HDR_EN:
 		break;
 	default:
-		pr_err("%s: unknown ctrl id.\n", __func__);
+		pr_info("%s: unknown ctrl id.\n", __func__);
 		return -EINVAL;
 	}
 
