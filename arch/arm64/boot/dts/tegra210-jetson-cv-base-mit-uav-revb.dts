@@ -344,7 +344,6 @@
       nvidia,tx-clk-tap-delay = <0x0>;
 		};
 	};
-
 	spi@7000d400 {
 		status = "okay";
 		spi@0 {

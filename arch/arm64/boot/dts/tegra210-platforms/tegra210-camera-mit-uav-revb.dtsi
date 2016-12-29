@@ -23,12 +23,9 @@
 #define GANG_MODE_R_L 3
 #define GANG_MODE_B_T 4
 
-//#define CAM0_RST_L	TEGRA_GPIO(E, 5)
 #define CAM0_RST_L	TEGRA_GPIO(G, 8)
 
-//#define CAM_MUX0    TEGRA_GPIO(T, 1)
 #define CAM_MUX0    TEGRA_GPIO(G, 7)
-//#define CAM_MUX1    TEGRA_GPIO(S, 6)
 #define CAM_MUX1    TEGRA_GPIO(D, 7)
 
 //GPIOs

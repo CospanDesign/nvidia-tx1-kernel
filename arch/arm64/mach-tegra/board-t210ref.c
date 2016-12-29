@@ -232,6 +232,11 @@ static void __init tegra_t210ref_early_init(void)
 		tegra_soc_device_init("mit_uav_reva");
 		pr_info("board_name: mit_uav_reva\n");
 	}
+	else if (of_machine_is_compatible("nvidia,mit-uav-revb")){
+		tegra_soc_device_init("mit_uav_revb");
+		pr_info("board_name: mit_uav_revb\n");
+	}
+
 	else if (of_machine_is_compatible("nvidia,he2290"))
 		tegra_soc_device_init("he2290");
 }
@@ -409,6 +414,7 @@ static const char * const t210ref_dt_board_compat[] = {
 	"nvidia,jetson-e",
 	"nvidia,jetson-cv",
   "nvidia,mit-uav-reva",
+  "nvidia,mit-uav-revb",
 	"nvidia,he2290",
 	NULL
 };

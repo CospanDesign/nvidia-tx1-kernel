@@ -561,7 +561,8 @@ int t210ref_camera_init(void)
 #endif
 
 #if IS_ENABLED(CONFIG_VIDEO_IMX219)
-  if (of_machine_is_compatible("nvidia,mit-uav-reva")) {
+  if (of_machine_is_compatible("nvidia,mit-uav-reva") || 
+      of_machine_is_compatible("nvidia,mit-uav-revb")) {
     pr_info("%s: MIT UAV REVA Detected\n", __func__);
 
 		//Register all camera
@@ -584,7 +585,8 @@ int t210ref_camera_init(void)
 
 #endif
 #if IS_ENABLED(CONFIG_VIDEO_OV5647)
-  if (of_machine_is_compatible("nvidia,mit-uav-reva")) {
+  if (of_machine_is_compatible("nvidia,mit-uav-reva") ||
+      of_machine_is_compatible("nvidia,mit-uav-revb")) {
     pr_info("%s: MIT UAV REVA Detected\n", __func__);
 
 		//Register all camera
