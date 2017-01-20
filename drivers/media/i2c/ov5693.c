@@ -1332,29 +1332,28 @@ static int ov5693_probe(struct i2c_client *client,
 		return -EFAULT;
 	}
 
-	common_data->ops		= &ov5693_common_ops;
-	common_data->ctrl_handler	= &priv->ctrl_handler;
-	common_data->i2c_client		= client;
-	common_data->frmfmt		= ov5693_frmfmt;
-	common_data->colorfmt		= camera_common_find_datafmt(
-					  OV5693_DEFAULT_DATAFMT);
-	common_data->power		= &priv->power;
-	common_data->ctrls		= priv->ctrls;
-	common_data->priv		= (void *)priv;
-	common_data->numctrls		= ARRAY_SIZE(ctrl_config_list);
-	common_data->numfmts		= ARRAY_SIZE(ov5693_frmfmt);
-	common_data->def_mode		= OV5693_DEFAULT_MODE;
-	common_data->def_width		= OV5693_DEFAULT_WIDTH;
-	common_data->def_height		= OV5693_DEFAULT_HEIGHT;
-	common_data->fmt_width		= common_data->def_width;
-	common_data->fmt_height		= common_data->def_height;
-	common_data->def_clk_freq	= OV5693_DEFAULT_CLK_FREQ;
+	common_data->ops                   = &ov5693_common_ops;
+	common_data->ctrl_handler          = &priv->ctrl_handler;
+	common_data->i2c_client            = client;
+	common_data->frmfmt                = ov5693_frmfmt;
+	common_data->colorfmt              = camera_common_find_datafmt(OV5693_DEFAULT_DATAFMT);
+	common_data->power                 = &priv->power;
+	common_data->ctrls                 = priv->ctrls;
+	common_data->priv                  = (void *)priv;
+	common_data->numctrls              = ARRAY_SIZE(ctrl_config_list);
+	common_data->numfmts               = ARRAY_SIZE(ov5693_frmfmt);
+	common_data->def_mode              = OV5693_DEFAULT_MODE;
+	common_data->def_width             = OV5693_DEFAULT_WIDTH;
+	common_data->def_height            = OV5693_DEFAULT_HEIGHT;
+	common_data->fmt_width             = common_data->def_width;
+	common_data->fmt_height            = common_data->def_height;
+	common_data->def_clk_freq          = OV5693_DEFAULT_CLK_FREQ;
 
-	priv->i2c_client = client;
-	priv->s_data			= common_data;
-	priv->subdev			= &common_data->subdev;
-	priv->subdev->dev		= &client->dev;
-	priv->s_data->dev		= &client->dev;
+	priv->i2c_client                   = client;
+	priv->s_data                       = common_data;
+	priv->subdev                       = &common_data->subdev;
+	priv->subdev->dev                  = &client->dev;
+	priv->s_data->dev                  = &client->dev;
 
 	err = ov5693_power_get(priv);
 	if (err)

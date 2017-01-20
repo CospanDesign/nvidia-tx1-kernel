@@ -40,59 +40,40 @@ static imx219_reg imx219_stop[] = {
 
 /* 0.912 GHz */
 static imx219_reg mode_1920x1080[] = {
-
   {IMX219_TABLE_WAIT_MS, 10},
 
   /* analogue gain setting */
-  {0x0157, 0x00},
+  //{0x0157, 0x00},
   /* 0x0158, 0x159 Digital gain */
 
-  /* Course Time */
-  {0x015A, 0x04},
-  {0x015B, 0x22},
+  /* Coarse Time */
+
+  //{0x015A, 0x04}, {0x015B, 0x22},
 
   /* Frame Length: 1766 */
-  {0x0160, 0x06},
-  {0x0161, 0xE6},
-
+  {0x0160, 0x06}, {0x0161, 0xE6},
   /* line length: 3448 */
-  {0x0162, 0x0D},
-  {0x0163, 0x78},
-
-
+  {0x0162, 0x0D}, {0x0163, 0x78},
 
 
   /* Image Width: 2599 - 680 = 1920 - 1 */
-
   /* crop_rect.left: 680 Offset */
-  {0x0164, 0x02},
-  {0x0165, 0xA8},
-
+  {0x0164, 0x02}, {0x0165, 0xA8},
   /* crop_rect.width - 1: 2599 */
-  {0x0166, 0x0A},
-  {0x0167, 0x27},
-
-
+  {0x0166, 0x0A}, {0x0167, 0x27},
 
 
   /* Image Height: 1771 - 692 = 1080 - 1 */
-
   /* crop_rect.top: 692 */
-  {0x0168, 0x02},
-  {0x0169, 0xB4},
-
+  {0x0168, 0x02}, {0x0169, 0xB4},
   /* crop_rect.height - 1: 1771 */
-  {0x016A, 0x06},
-  {0x016B, 0xEB},
+  {0x016A, 0x06}, {0x016B, 0xEB},
 
 
   /* crop_rect.width: 1920 */
-  {0x016C, 0x07},
-  {0x016D, 0x80},
-
+  {0x016C, 0x07}, {0x016D, 0x80},
   /* crop_rect.height: 1080 */
-  {0x016E, 0x04},
-  {0x016F, 0x38},
+  {0x016E, 0x04}, {0x016F, 0x38},
 
 
   /* X odd increment: 1 */
@@ -101,111 +82,123 @@ static imx219_reg mode_1920x1080[] = {
   /* Y odd increment: 1 */
   {0x0171, 0x01},
 
-  /* Binning Mode Horizontal: 0 */
+  /* Binning Mode Horizontal: 1 (no binning) */
   {0x0174, 0x00},
 
-  /* Binning Mode Horizontal: 1 */
-  {0x0175, 0x00}
+  /* Binning Mode Horizontal: 1 (no binning) */
+  {0x0175, 0x00},
+
+  {IMX219_TABLE_END, 0x00 }
 };
 
 static imx219_reg mode_1280x720[] = {
   {IMX219_TABLE_WAIT_MS, 10},
 
-  /* Course Time */
-  {0x015A, 0x04},
-  {0x015B, 0x22},
+  // analogue gain setting
+  //{0x0157, 0xC7},
+  //{0x0157, 0x00},
 
-  /* Frame Length: 1766 */
-  {0x0160, 0x06},
-  {0x0161, 0xE3},
 
-  /* Line Length: 3448 */
-  {0x0162, 0x0D},
-  {0x0163, 0x78},
+  // Coarse Time
+  //{0x015A, 0x04}, {0x015B, 0x22},
+  //{0x015A, 0x0D}, {0x015B, 0x05},
 
-  /* Image Width: 2919 - 360 = 2560 - 1 (2 X 1280) */
+  //{0x015A, 0x03}, {0x015B, 0x51},
 
-  /* crop_rect.left: 360 */
-  {0x0164, 0x01},
-  {0x0165, 0x68},
+	// 30 FPS
+  // Frame Length: 853
+  {0x0160, 0x03}, {0x0161, 0x55},
 
-  /* crop_rect.width: 2919 */
-  {0x0166, 0x0B},
-  {0x0167, 0x67},
+  // Frame Length: 652
+  //{0x0160, 0x02}, {0x0161, 0x8C},
 
-  /* Image Height: 1953 - 512 = 1442 - 1 (2 X 720) */
+	// Line Length: 3448
+  //{0x0162, 0x0D}, {0x0163, 0x78},
 
-  /* crop_rect.top: 512 */
-  {0x0168, 0x02},
-  {0x0169, 0x00},
+	// Line Length: 3449
+  {0x0162, 0x0D}, {0x0163, 0x78},
 
-  /* crop_rect.height: 1953 */
-  {0x016A, 0x07},
-  {0x016B, 0xA1},
+  // Image Width: 2279 - 360 = 1920 - 1 (1279)
+  // crop_rect.left: 1000
+  //{0x0164, 0x03}, {0x0165, 0xE8},
 
-  /* image width = 1280 */
-  {0x016C, 0x05},
-  {0x016D, 0x00},
 
-  /* image height = 720 */
-  {0x016E, 0x02},
-  {0x016F, 0xD0},
+  // crop_rect.left: 360
+  {0x0164, 0x01}, {0x0165, 0x68},
 
-  /* X odd increment */
+  // crop_rect.width: 2279
+  //{0x0166, 0x08}, {0x0167, 0xE7},
+  //{0x0166, 0x02}, {0x0167, 0x00},
+  {0x0166, 0x0B}, {0x0167, 0x67},
+
+  // Image Height: 1591 - 872 = 720 - 1 (719)
+  // crop_rect.top: 872
+  //{0x0168, 0x03}, {0x0169, 0x68},
+  {0x0168, 0x02}, {0x0169, 0x00},
+  // crop_rect.height: 1591
+  //{0x016A, 0x06}, {0x016B, 0x37},
+  {0x016A, 0x07}, {0x016B, 0x9F},
+
+  // image width = 1280
+  {0x016C, 0x05}, {0x016D, 0x00},
+  // image height = 720
+  {0x016E, 0x02}, {0x016F, 0xD0},
+
+  // X odd increment
   {0x0170, 0x01},
 
-  /* Y odd increment */
+  // Y odd increment
   {0x0171, 0x01},
 
-  /* Binning Mode: X (2) */
-  {0x0174, 0x01},
+  // Binning Mode: X (1)
+  //{0x0174, 0x00},
+  {0x0174, 0x03},
+  //{0x0174, 0x01},
 
-  /* Binning Mode: Y (2) */
-  {0x0175, 0x01}
+  // Binning Mode: Y (1)
+  //{0x0175, 0x00}
+  {0x0175, 0x03},
+  //{0x0175, 0x01}
+
+  {IMX219_TABLE_END, 0x00 }
 };
 
 static imx219_reg mode_640x480[] = {
   {IMX219_TABLE_WAIT_MS, 10},
 
-  /* Course Time */
-  {0x015A, 0x04},
-  {0x015B, 0x22},
+  /* Coarse Time */
+  //Coarse Time = 565
 
-  /* Frame Length: 1763 */
-  {0x0160, 0x06},
-  {0x0161, 0xE3},
+  //{0x015A, 0x02}, {0x015B, 0x35},
 
+  /* Frame Length: 569 */
+  //{0x0160, 0x01}, {0x0161, 0x89},
+  {0x0160, 0x02}, {0x0161, 0x39},
+
+  /* Line Length: 3559 */
+  //{0x0162, 0x0D}, {0x0163, 0xE8},
+  {0x0162, 0x0D}, {0x0163, 0xE7},
   /* Line Length: 3448 */
-  {0x0162, 0x0D},
-  {0x0163, 0x78},
+  //{0x0162, 0x0D}, {0x0163, 0x78},
 
-  /* Image Width: 3279 - 0 = 3280 - 1 (2 X 1640) */
+  /* Window Width: 2279 - 1000 = 2280 - 1 */
 
-  /* crop_rect.left: 0 */
-  {0x0164, 0x00},
-  {0x0165, 0x00},
+  /* crop_rect.left: 1000 */
+  {0x0164, 0x03}, {0x0165, 0xE8},
+  /* crop_rect.width: 2279 */
+  {0x0166, 0x08}, {0x0167, 0xE7},
 
-  /* crop_rect.width: 3279 */
-  {0x0166, 0x0C},
-  {0x0167, 0xCF},
+  /* Window Height: 1711 - 752 = 960 - 1 (2 X 480) */
 
-  /* Image Height: 2463 - 0 = 2464 - 1 (2 X 1232) */
+  /* crop_rect.top: 752 */
+  {0x0168, 0x02}, {0x0169, 0xF0},
+  /* crop_rect.height: 1711 */
+  {0x016A, 0x06}, {0x016B, 0xAF},
 
-  /* crop_rect.top: 0 */
-  {0x0168, 0x00},
-  {0x0169, 0x00},
-
-  /* crop_rect.height: 2463 */
-  {0x016A, 0x09},
-  {0x016B, 0x9F},
-
-  /* image width = 1640 */
-  {0x016C, 0x06},
-  {0x016D, 0x68},
-
-  /* image height = 1232 */
-  {0x016E, 0x04},
-  {0x016F, 0xD0},
+  /* image width = 640 */
+  {0x016C, 0x02}, {0x016D, 0x80},
+  /* image height = 480 */
+  {0x016E, 0x01}, {0x016F, 0xE0},
 
   /* X odd increment */
   {0x0170, 0x01},
@@ -214,15 +207,23 @@ static imx219_reg mode_640x480[] = {
   {0x0171, 0x01},
 
   /* Binning Mode: X (2) */
-  {0x0174, 0x01},
+  {0x0174, 0x03},
+  //{0x0174, 0x00},
 
   /* Binning Mode: Y (2) */
-  {0x0175, 0x01}
+  {0x0175, 0x03},
+  //{0x0175, 0x00},
+
+  {IMX219_TABLE_END, 0x00 }
 };
 
 static imx219_reg mode_table_common[] = {
   /* software reset */
   {0x0103, 0x01},
+  {0x0100, 0x00},
+
+  {0x6620, 0x01}, {0x6621, 0x01},
+  {0x6622, 0x01}, {0x6623, 0x01},
 
   /* Access Code to registers over 0x3000 */
   {0x30EB, 0x05},
@@ -236,44 +237,57 @@ static imx219_reg mode_table_common[] = {
   {0x0114, 0x01},
 
   /* CSI data format */
-  {0x018C, 0x0A},
-  {0x018D, 0x0A},
+  {0x018C, 0x0A}, {0x018D, 0x0A},
 
-  /* dphy control */
+  /* dphy control: Auto */
   {0x0128, 0x00},
 
-  /* external clock frequency = 24MHz ?? */
-  {0x012A, 0x18},
-  {0x012B, 0x00},
+  /* external clock frequency = 24MHz */
+  {0x012A, 0x18}, // 24 MHz
+  {0x012B, 0x00}, // 000 KHz
 
   /* analogue gain setting */
   {0x0157, 0x00},
   /* 0x0158, 0x159 Digital gain */
+  //{0x015A, 0x09}, {0x015B, 0xBD},
+  //{0x015A, 0x01}, {0x015B, 0x00},
+  {0x015A, 0x01}, {0x015B, 0x00},
 
+
+/*
   //Clock Settings
 
-  /* VTPXCK_DIV */
+  // PIXEL CLOCK USED TO DRIVE SENSOR)
+  // VTPXCK_DIV: 4: 1/4, 5: 1/5, 8: 1/8, 10: 1/10
   {0x0301, 0x05},
-  /* VTSYS_DIV = 1 (Divide by 1 I think)*/
+  // VTSYS_DIV = 1: Divide by 1
   {0x0303, 0x01},
-  /* PREPLLCK_VT_DIV */
-  {0x0304, 0x03},
-  /* PREPLLCK_OP_DIV */
-  {0x0305, 0x03},
-  /* PLL_VT_MPY = 57*/
-  {0x0306, 0x00},
-  {0x0307, 0x39},
-  /* OPPXCK_DIV */
+
+  // PREPLLCK_VT_DIV: 1: 1/1, 2: 1/2, 3: 1/3
+  {0x0304, 0x03}, //MUST BE 3 FOR 24MHz
+
+  // PREPLLCK_OP_DIV: 1: 1/1, 2: 1/2, 3: 1/3
+  {0x0305, 0x03}, //MUST BE 3 FOR 24MHz
+
+  // PLL_VT_MPY = 57 (Multiplier)
+  {0x0306, 0x00}, {0x0307, 0x39},
+  //{0x0306, 0x00}, {0x0307, 0x2E},
+  //{0x0306, 0x00}, {0x0307, 0x57},
+
+  // OPPXCK_DIV (pixel bit depth): 8:1/8 10:1/10
   {0x0309, 0x0A},
-  /* OPSYSCK_DIV = 1 (Divide by 1 I think) */
+  // OPSYSCK_DIV (divide by two for double data rate): 1:1/2
   {0x030B, 0x01},
-  /* PLL_OP_MPY = 114*/
-  {0x030C, 0x00},
-  {0x030D, 0x72},
+
+  // PLL_OP_MPY = 114 (Multiplier)
+  {0x030C, 0x00}, {0x030D, 0x72},
+  //{0x030C, 0x00}, {0x030D, 0x5C},
+  //{0x030C, 0x00}, {0x030D, 0x5A},
 
 
+  //Sensor Pixel Clock: EXCLK_FREQ / PREPLLLCK_VT_DIV * PLL_VT_MPY / VTPXCK_DIV: 24MHz / 3 * 57 / 5 = 91 MHz
 
-  /* CIS tunning */
+  // CIS tunning
   {0x455E, 0x00},
   {0x471E, 0x4B},
   {0x4767, 0x0F},
@@ -286,6 +300,84 @@ static imx219_reg mode_table_common[] = {
   {0x4793, 0x10},
   {0x4797, 0x0E},
   {0x479B, 0x0E}
+
+*/
+
+  {IMX219_TABLE_END, 0x00 }
+};
+
+static imx219_reg mode_table_clocks[] = {
+  //Clock Settings
+
+  // PIXEL CLOCK USED TO DRIVE SENSOR)
+  // VTPXCK_DIV: 4: 1/4, 5: 1/5, 8: 1/8, 10: 1/10
+  {0x0301, 0x05},
+  // VTSYS_DIV = 1: Divide by 1
+  {0x0303, 0x01},
+
+  // PREPLLCK_VT_DIV: 1: 1/1, 2: 1/2, 3: 1/3
+  {0x0304, 0x03}, //MUST BE 3 FOR 24MHz
+
+  // PREPLLCK_OP_DIV: 1: 1/1, 2: 1/2, 3: 1/3
+  {0x0305, 0x03}, //MUST BE 3 FOR 24MHz
+
+  // PLL_VT_MPY = 57 (Multiplier)
+  {0x0306, 0x00}, {0x0307, 0x39},
+  //{0x0306, 0x00}, {0x0307, 0x2E},
+  //{0x0306, 0x00}, {0x0307, 0x57},
+
+  // OPPXCK_DIV (pixel bit depth): 8:1/8 10:1/10
+  {0x0309, 0x0A},
+  // OPSYSCK_DIV (divide by two for double data rate): 1:1/2
+  {0x030B, 0x01},
+
+  // PLL_OP_MPY = 114 (Multiplier)
+  {0x030C, 0x00}, {0x030D, 0x72},
+  //{0x030C, 0x00}, {0x030D, 0x5C},
+  //{0x030C, 0x00}, {0x030D, 0x5A},
+
+
+  //Sensor Pixel Clock: EXCLK_FREQ / PREPLLLCK_VT_DIV * PLL_VT_MPY / VTPXCK_DIV: 24MHz / 3 * 57 / 5 = 91 MHz
+
+  // CIS tunning
+  {0x455E, 0x00},
+  {0x471E, 0x4B},
+  {0x4767, 0x0F},
+  {0x4750, 0x14},
+  {0x4540, 0x00},
+  {0x47B4, 0x14},
+  {0x4713, 0x30},
+  {0x478B, 0x10},
+  {0x478F, 0x10},
+  {0x4793, 0x10},
+  {0x4797, 0x0E},
+  {0x479B, 0x0E},
+
+  {IMX219_TABLE_END, 0x00 }
+};
+
+typedef struct {
+  uint8_t gain;
+  uint16_t coarse_time;
+  uint16_t frame_length;
+}imx219_mode_values_t;
+
+static imx219_mode_values_t mode_1920x1080_values = {
+  .gain = 0,
+  .coarse_time = (1766 - 4),
+  .frame_length=1766,
+};
+
+static imx219_mode_values_t mode_1280x720_values = {
+  .gain = 0,
+  .coarse_time = (851 - 4),
+  .frame_length = 851,
+};
+
+static imx219_mode_values_t mode_640x480_values = {
+  .gain = 0,
+  .coarse_time = (569 - 4),
+  .frame_length = 569,
 };
 
 enum {
@@ -294,32 +386,39 @@ enum {
   IMX219_MODE_640X480,
 
   IMX219_MODE_COMMON,
+  IMX219_MODE_CLOCK,
   IMX219_MODE_START_STREAM,
   IMX219_MODE_STOP_STREAM,
   IMX219_MODE_TEST_PATTERN,
 };
 
-static imx219_reg *mode_table[] = {
+imx219_mode_values_t *mode_values[] = {
+  [IMX219_MODE_1920X1080]     = &mode_1920x1080_values,
+  [IMX219_MODE_1280X720]      = &mode_1280x720_values,
+  [IMX219_MODE_640X480]       = &mode_640x480_values,
+};
+
+static const imx219_reg *mode_table[] = {
   [IMX219_MODE_1920X1080]     = mode_1920x1080,
   [IMX219_MODE_1280X720]      = mode_1280x720,
   [IMX219_MODE_640X480]       = mode_640x480,
 
   [IMX219_MODE_COMMON]        = mode_table_common,
+  [IMX219_MODE_CLOCK]         = mode_table_clocks,
   [IMX219_MODE_START_STREAM]  = imx219_start,
   [IMX219_MODE_STOP_STREAM]   = imx219_stop,
 };
 
 static const int imx219_30fps[] = {
   30,
-  10,
-  1,
 };
 
 static const int imx219_60fps[] = {
   60,
-  30,
-  10,
-  1,
+};
+
+static const int imx219_90fps[] = {
+  90,
 };
 
 /*
@@ -328,8 +427,12 @@ camera_common_frmfmt: {struct v4l2_frmsize_discrete size}, {const int *framerate
 
 static const struct camera_common_frmfmt imx219_frmfmt[] = {
 // Frame Size,    Framerates??,   Num Framerates, HDR Enable,  Mode
-  {{1920,1080},   imx219_30fps,   3,              0,           IMX219_MODE_1920X1080     },
-  {{1280,720},    imx219_60fps,   4,              0,           IMX219_MODE_1280X720      },
-  {{640,480},     imx219_60fps,   4,              0,           IMX219_MODE_640X480       },
+  {{1920,1080},   imx219_30fps,   1,              0,           IMX219_MODE_1920X1080     },
+  {{1280,720},    imx219_60fps,   1,              0,           IMX219_MODE_1280X720      },
+  {{640,480},     imx219_90fps,   1,              0,           IMX219_MODE_640X480       }
 };
+
+
+
+
 #endif  /* __IMX219_I2C_TABLES__ */

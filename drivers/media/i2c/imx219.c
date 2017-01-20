@@ -36,31 +36,28 @@
 
 #define IMX219_MAX_COARSE_DIFF          4
 
-#define IMX219_GAIN_SHIFT               8
-#define IMX219_MIN_GAIN                 (1 << IMX219_GAIN_SHIFT)
-#define IMX219_MAX_GAIN                 (8 << IMX219_GAIN_SHIFT)
-//#define IMX219_MIN_GAIN                 1
-//#define IMX219_MAX_GAIN                 8
+#define IMX219_SHIFT_VALUE              (4)
+#define IMX219_GAIN_SHIFT               (1 << IMX219_SHIFT_VALUE)
+#define IMX219_MIN_GAIN                 (0   * IMX219_GAIN_SHIFT)
+#define IMX219_MAX_GAIN                 (10  * IMX219_GAIN_SHIFT)
 
-#define IMX219_MIN_FRAME_LENGTH         (1763)
-//#define IMX219_MIN_FRAME_LENGTH         (0x0A83)
+#define IMX219_MIN_FRAME_LENGTH         (480)
 #define IMX219_MAX_FRAME_LENGTH         (0xFFFF)
 #define IMX219_MIN_EXPOSURE_COARSE      (0x0001)
 #define IMX219_MAX_EXPOSURE_COARSE  \
   (IMX219_MAX_FRAME_LENGTH-IMX219_MAX_COARSE_DIFF)
 
-#define IMX219_DEFAULT_GAIN             IMX219_MIN_GAIN
-//#define IMX219_MIN_FRAME_LENGTH         (0x0A83)
-#define IMX219_DEFAULT_FRAME_LENGTH     (1766)
+#define IMX219_DEFAULT_GAIN             (IMX219_MIN_GAIN)
+#define IMX219_DEFAULT_FRAME_LENGTH     (853)
 #define IMX219_DEFAULT_EXPOSURE_COARSE  \
   (IMX219_DEFAULT_FRAME_LENGTH-IMX219_MAX_COARSE_DIFF)
 
-#define IMX219_DEFAULT_MODE             IMX219_MODE_1920X1080
-#define IMX219_DEFAULT_WIDTH            1920
-#define IMX219_DEFAULT_HEIGHT           1080
+#define IMX219_DEFAULT_MODE             IMX219_MODE_1280X720
+#define IMX219_DEFAULT_WIDTH            1280
+#define IMX219_DEFAULT_HEIGHT           720
 #define IMX219_DEFAULT_DATAFMT          V4L2_MBUS_FMT_SRGGB10_1X10
 #define IMX219_DEFAULT_CLK_FREQ         24000000
-#define IMX219_DEFAULT_MAX_FPS          30
+#define IMX219_DEFAULT_MAX_FPS          90
 
 struct imx219 {
   struct mutex      imx219_camera_lock;
@@ -147,6 +144,7 @@ static struct v4l2_ctrl_config ctrl_config_list[] = {
     .def = 0,
     .qmenu_int = switch_ctrl_qmenu,
   },
+/*
   {
     .ops = &imx219_ctrl_ops,
     .id = V4L2_CID_FUSE_ID,
@@ -157,10 +155,10 @@ static struct v4l2_ctrl_config ctrl_config_list[] = {
     .max = IMX219_FUSE_ID_STR_SIZE,
     .step = 2,
   },
+*/
 };
 
-static inline void imx219_get_frame_length_regs(struct reg_8 *regs,
-        u16 frame_length)
+static inline void imx219_get_frame_length_regs(struct reg_8 *regs, u16 frame_length)
 {
   regs->addr = IMX219_FRAME_LENGTH_ADDR_MSB;
   regs->val = (frame_length >> 8) & 0xff;
@@ -168,8 +166,7 @@ static inline void imx219_get_frame_length_regs(struct reg_8 *regs,
   (regs + 1)->val = (frame_length) & 0xff;
 }
 
-static inline void imx219_get_coarse_time_regs(struct reg_8 *regs,
-        u16 coarse_time)
+static inline void imx219_get_coarse_time_regs(struct reg_8 *regs, u16 coarse_time)
 {
   regs->addr = IMX219_COARSE_TIME_ADDR_MSB;
   regs->val = (coarse_time >> 8) & 0xff;
@@ -177,8 +174,7 @@ static inline void imx219_get_coarse_time_regs(struct reg_8 *regs,
   (regs + 1)->val = (coarse_time) & 0xff;
 }
 
-static inline void imx219_get_gain_reg(struct reg_8 *regs,
-        u16 gain)
+static inline void imx219_get_gain_reg(struct reg_8 *regs, u16 gain)
 {
   regs->addr = IMX219_GAIN_ADDR;
   regs->val = gain & 0xff;
@@ -187,8 +183,7 @@ static inline void imx219_get_gain_reg(struct reg_8 *regs,
 static int test_mode;
 module_param(test_mode, int, 0644);
 
-static inline int imx219_read_reg(struct camera_common_data *s_data,
-        u16 addr, u8 *val)
+static inline int imx219_read_reg(struct camera_common_data *s_data, u16 addr, u8 *val)
 {
   struct imx219 *priv = (struct imx219 *)s_data->priv;
   return regmap_read(priv->regmap, addr, (unsigned int *) val);
@@ -207,8 +202,7 @@ static int imx219_write_reg(struct camera_common_data *s_data, u16 addr, u8 val)
   return err;
 }
 
-static int imx219_write_table(struct imx219 *priv,
-            const struct reg_8 table[])
+static int imx219_write_table(struct imx219 *priv, const struct reg_8 table[])
 {
   return regmap_util_write_table_8(priv->regmap,
            table,
@@ -387,38 +381,60 @@ static int imx219_s_stream(struct v4l2_subdev *sd, int enable)
 
   dev_info(&client->dev, "%s++\n", __func__);
 
-  if (!enable)
-    return imx219_write_table(priv,
-      mode_table[IMX219_MODE_STOP_STREAM]);
+  if (!enable) {
+    dev_info(&client->dev, "%s: Stopping Stream\n", __func__);
+    return imx219_write_table(priv, mode_table[IMX219_MODE_STOP_STREAM]);
+  }
 
   err = imx219_write_table(priv, mode_table[IMX219_MODE_COMMON]);
   if (err) {
     dev_err(&client->dev, "%s: Failed to set common values\n", __func__);
     goto exit;
   }
-
   err = imx219_write_table(priv, mode_table[s_data->mode]);
+  dev_info(&client->dev, "%s: Setting mode: %d\n", __func__, s_data->mode);
   if (err) {
     dev_err(&client->dev, "%s: Error setting camera mode\n", __func__);
     goto exit;
   }
+  err = imx219_write_table(priv, mode_table[IMX219_MODE_CLOCK]);
+  if (err) {
+    dev_err(&client->dev, "%s: Failed to set clock values\n", __func__);
+    goto exit;
+  }
 
-  /* write list of override regs for the asking frame length, */
-  /* coarse integration time, and gain.                       */
+  //Set all the control values with the appropariate ones for this mode
+  control.id = V4L2_CID_GAIN;
+  control.value = mode_values[s_data->mode]->gain;
+  err = v4l2_subdev_s_ctrl(sd, &control);
+
+  control.id = V4L2_CID_COARSE_TIME;
+  control.value = mode_values[s_data->mode]->coarse_time;
+  err = v4l2_subdev_s_ctrl(sd, &control);
+
+  control.id = V4L2_CID_FRAME_LENGTH;
+  control.value = mode_values[s_data->mode]->frame_length;
+  err = v4l2_subdev_s_ctrl(sd, &control);
+
+
+  //Write all the overrides
+  //Gain
   control.id = V4L2_CID_GAIN;
   err = v4l2_g_ctrl(&priv->ctrl_handler, &control);
   err |= imx219_set_gain(priv, control.value);
   if (err) {
-    dev_info(&client->dev, "%s: error gain override\n", __func__);
+    dev_err(&client->dev, "%s: error gain override\n", __func__);
   }
 
+  //Frame Length
   control.id = V4L2_CID_FRAME_LENGTH;
   err = v4l2_g_ctrl(&priv->ctrl_handler, &control);
   err |= imx219_set_frame_length(priv, control.value);
-  if (err)
-    dev_info(&client->dev,
-      "%s: error frame length override\n", __func__);
+  if (err) {
+    dev_err(&client->dev, "%s: error frame length override\n", __func__);
+  }
 
+  //Coarse Time (Exposure Length)
   control.id = V4L2_CID_COARSE_TIME;
   err = v4l2_g_ctrl(&priv->ctrl_handler, &control);
   err |= imx219_set_coarse_time(priv, control.value);
@@ -428,14 +444,8 @@ static int imx219_s_stream(struct v4l2_subdev *sd, int enable)
       "%s: error coarse time override\n", __func__);
   }
 
-/*
-  control.id = V4L2_CID_COARSE_TIME_SHORT;
-  err = v4l2_g_ctrl(&priv->ctrl_handler, &control);
-  err |= imx219_set_coarse_time_short(priv, control.value);
-  if (err)
-    dev_info(&client->dev,
-      "%s: error coarse time short override\n", __func__);
-*/
+
+
 
   dev_info(&client->dev, "%s: Starting stream\n", __func__);
   err = imx219_write_table(priv, mode_table[IMX219_MODE_START_STREAM]);
@@ -447,7 +457,6 @@ exit:
   dev_info(&client->dev, "%s: error setting stream\n", __func__);
   return err;
 }
-
 
 static int imx219_g_input_status(struct v4l2_subdev *sd, u32 *status)
 {
@@ -469,7 +478,7 @@ static int imx219_get_fmt(struct v4l2_subdev *sd,
 
 static int imx219_set_fmt(struct v4l2_subdev *sd,
     struct v4l2_subdev_fh *fh,
-  struct v4l2_subdev_format *format)
+    struct v4l2_subdev_format *format)
 {
   int ret;
 
@@ -531,15 +540,18 @@ static int imx219_set_gain(struct imx219 *priv, s32 val)
 {
   struct reg_8 reg_list[2];
   int err;
+  u32 fgain = (u32) val;
   u32 gain = 0;
   int i = 0;
 
+  if (fgain < IMX219_MIN_GAIN )
+    fgain = 1 * IMX219_GAIN_SHIFT;
+
   dev_info(&priv->i2c_client->dev, "%s++\n", __func__);
 
-
-
-  /* translate value */
-  gain = 256 - (u32) (256 * (1 << IMX219_GAIN_SHIFT) / val);
+  // translate value
+  gain = (u32) ((256 * IMX219_GAIN_SHIFT) - ((256 * IMX219_GAIN_SHIFT) / fgain)) >> IMX219_SHIFT_VALUE;
+  
   dev_info(&priv->i2c_client->dev,
      "%s: val: %d\n", __func__, gain);
 
@@ -710,6 +722,7 @@ static int imx219_ctrls_init(struct imx219 *priv)
       continue;
     }
 
+/*
     if (ctrl_config_list[i].type == V4L2_CTRL_TYPE_STRING &&
       ctrl_config_list[i].flags & V4L2_CTRL_FLAG_READ_ONLY) {
       ctrl->string = devm_kzalloc(&client->dev,
@@ -720,6 +733,7 @@ static int imx219_ctrls_init(struct imx219 *priv)
         return -ENOMEM;
       }
     }
+*/
     priv->ctrls[i] = ctrl;
   }
 
@@ -902,7 +916,7 @@ static int imx219_probe(struct i2c_client *client,
   common_data->fmt_width    = common_data->def_width;
   common_data->fmt_height   = common_data->def_height;
   common_data->def_clk_freq = IMX219_DEFAULT_CLK_FREQ;
-	common_data->fmt_maxfps		= IMX219_DEFAULT_MAX_FPS;
+//	common_data->fmt_maxfps		= IMX219_DEFAULT_MAX_FPS;
 
   priv->i2c_client          = client;
   priv->s_data              = common_data;

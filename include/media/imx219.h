@@ -22,17 +22,17 @@
 #define IMX219_IOCTL_SET_GAIN           _IOW('o', 5, struct imx219_gain)
 #define IMX219_IOCTL_GET_FUSEID         _IOR('o', 6, struct nvc_fuseid)
 #define IMX219_IOCTL_SET_GROUP_HOLD     _IOW('o', 7, struct imx219_ae)
-#define IMX219_IOCTL_GET_AFDAT            _IOR('o', 8, __u32)
-#define IMX219_IOCTL_SET_POWER		_IOW('o', 20, __u32)
-#define IMX219_IOCTL_GET_FLASH_CAP	_IOR('o', 30, __u32)
-#define IMX219_IOCTL_SET_FLASH_MODE _IOW('o', 31, struct imx219_flash_control)
+#define IMX219_IOCTL_GET_AFDAT          _IOR('o', 8, __u32)
+#define IMX219_IOCTL_SET_POWER		      _IOW('o', 20, __u32)
+#define IMX219_IOCTL_GET_FLASH_CAP	    _IOR('o', 30, __u32)
+#define IMX219_IOCTL_SET_FLASH_MODE     _IOW('o', 31, struct imx219_flash_control)
 
 /* TODO: revisit these values for IMX219 */
 #define IMX219_FRAME_LENGTH_ADDR_MSB            0x0160
 #define IMX219_FRAME_LENGTH_ADDR_LSB            0x0161
 #define IMX219_COARSE_TIME_ADDR_MSB             0x015a
 #define IMX219_COARSE_TIME_ADDR_LSB             0x015b
-#define IMX219_GAIN_ADDR		                0x0157
+#define IMX219_GAIN_ADDR		                    0x0157
 
 #define IMX219_FUSE_ID_SIZE		6
 #define IMX219_FUSE_ID_STR_SIZE	(IMX219_FUSE_ID_SIZE * 2)

@@ -21,7 +21,7 @@
 #include <dt-bindings/gpio/tegra-gpio.h>
 #include <dt-bindings/padctrl/tegra210-pads.h>
 #include "tegra210-platforms/tegra210-prods.dtsi"
-#include "tegra210-platforms/tegra210-ers-touch-e1937-1000-a00.dtsi"
+//#include "tegra210-platforms/tegra210-ers-touch-e1937-1000-a00.dtsi"
 #include "tegra210-platforms/tegra210-modem-common.dtsi"
 
 / {
