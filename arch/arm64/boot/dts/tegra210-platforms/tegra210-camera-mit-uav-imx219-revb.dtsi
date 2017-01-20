@@ -185,7 +185,7 @@
 					tegra_sinterface = "serial_a";
 					discontinuous_clk = "yes";
 					cil_settletime = "0";
-					pixel_t = "bayer_bggr";
+					pixel_t = "bayer_rggb";
 					readout_orientation = "90";
 					inherent_gain = "1";
 
@@ -195,8 +195,8 @@
 					line_length = "3448";
 				  dpcm_enable = "false";
 
-					min_gain_val = "0.0";
-					max_gain_val = "10.66";
+					min_gain_val = "0";
+					max_gain_val = "252";
 					min_hdr_ratio = "1";
 					max_hdr_ratio = "1";
 					min_framerate = "64";
@@ -218,7 +218,7 @@
 					tegra_sinterface = "serial_a";
 					discontinuous_clk = "yes";
 					cil_settletime = "0";
-					pixel_t = "bayer_bggr";
+					pixel_t = "bayer_rggb";
 					readout_orientation = "90";
 					inherent_gain = "1";
 
@@ -229,8 +229,8 @@
 				  dpcm_enable = "false";
 					//line_length = "1752";
 
-					min_gain_val = "0.0";
-					max_gain_val = "10.66";
+					min_gain_val = "0";
+					max_gain_val = "252";
 					min_hdr_ratio = "1";
 					max_hdr_ratio = "64";
 					min_framerate = "1";
@@ -257,7 +257,7 @@
 					tegra_sinterface = "serial_a";
 					discontinuous_clk = "yes";
 					cil_settletime = "0";
-					pixel_t = "bayer_bggr";
+					pixel_t = "bayer_rggb";
 					readout_orientation = "90";
 					inherent_gain = "1";
 
@@ -270,8 +270,8 @@
 					line_length = "3559";
 				  dpcm_enable = "false";
 
-					min_gain_val = "0.0";
-					max_gain_val = "10.66";
+					min_gain_val = "0";
+					max_gain_val = "252";
 					min_hdr_ratio = "1";
 					max_hdr_ratio = "1";
 					min_framerate = "1";

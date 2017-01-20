@@ -38,8 +38,8 @@
 
 #define IMX219_SHIFT_VALUE              (4)
 #define IMX219_GAIN_SHIFT               (1 << IMX219_SHIFT_VALUE)
-#define IMX219_MIN_GAIN                 (0   * IMX219_GAIN_SHIFT)
-#define IMX219_MAX_GAIN                 (10  * IMX219_GAIN_SHIFT)
+#define IMX219_MIN_GAIN                 (0   << IMX219_GAIN_SHIFT)
+#define IMX219_MAX_GAIN                 (10  << IMX219_GAIN_SHIFT)
 
 #define IMX219_MIN_FRAME_LENGTH         (480)
 #define IMX219_MAX_FRAME_LENGTH         (0xFFFF)
@@ -404,6 +404,7 @@ static int imx219_s_stream(struct v4l2_subdev *sd, int enable)
   }
 
   //Set all the control values with the appropariate ones for this mode
+/*
   control.id = V4L2_CID_GAIN;
   control.value = mode_values[s_data->mode]->gain;
   err = v4l2_subdev_s_ctrl(sd, &control);
@@ -415,6 +416,7 @@ static int imx219_s_stream(struct v4l2_subdev *sd, int enable)
   control.id = V4L2_CID_FRAME_LENGTH;
   control.value = mode_values[s_data->mode]->frame_length;
   err = v4l2_subdev_s_ctrl(sd, &control);
+*/
 
 
   //Write all the overrides
@@ -544,13 +546,20 @@ static int imx219_set_gain(struct imx219 *priv, s32 val)
   u32 gain = 0;
   int i = 0;
 
+   dev_info(&priv->i2c_client->dev,
+     "%s: user val: %d\n", __func__, val);
+
+ 
   if (fgain < IMX219_MIN_GAIN )
     fgain = 1 * IMX219_GAIN_SHIFT;
 
   dev_info(&priv->i2c_client->dev, "%s++\n", __func__);
 
+/*
   // translate value
-  gain = (u32) ((256 * IMX219_GAIN_SHIFT) - ((256 * IMX219_GAIN_SHIFT) / fgain)) >> IMX219_SHIFT_VALUE;
+  gain = (u32) ((256 << IMX219_GAIN_SHIFT) - ((256 << IMX219_GAIN_SHIFT) / fgain)) >> IMX219_SHIFT_VALUE;
+*/
+  gain = fgain;
   
   dev_info(&priv->i2c_client->dev,
      "%s: val: %d\n", __func__, gain);
