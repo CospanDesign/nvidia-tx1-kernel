@@ -52,10 +52,9 @@
 #include "tegra210-plugin-manager/tegra210-jetson-cv-eeprom-manager.dtsi"
 //#include "tegra210-plugin-manager/tegra210-jetson-cv-plugin-manager.dtsi"
 #include "tegra210-plugin-manager/tegra210-mit-uav-reva-plugin-manager.dtsi"
-//#include "tegra210-platforms/tegra210-camera-mit-uav-single-revb.dtsi"
-#include "tegra210-platforms/tegra210-camera-mit-uav-imx219-revb.dtsi"
-//#include "tegra210-platforms/tegra210-camera-mit-uav-revb.dtsi"
-//#include "tegra210-platforms/tegra210-camera-mit-uav-reva-ov5647.dtsi"
+
+//#include "tegra210-platforms/tegra210-camera-mit-uav-imx219-revb.dtsi"
+#include "tegra210-platforms/tegra210-camera-mit-uav-revb.dtsi"
 
 / {
 	model = "jetson_cv";

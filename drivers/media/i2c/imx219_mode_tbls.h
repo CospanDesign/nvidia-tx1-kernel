@@ -429,7 +429,7 @@ static const struct camera_common_frmfmt imx219_frmfmt[] = {
 // Frame Size,    Framerates??,   Num Framerates, HDR Enable,  Mode
   {{1920,1080},   imx219_30fps,   1,              0,           IMX219_MODE_1920X1080     },
   {{1280,720},    imx219_60fps,   1,              0,           IMX219_MODE_1280X720      },
-  {{640,480},     imx219_90fps,   1,              0,           IMX219_MODE_640X480       }
+  {{640,480},     imx219_90fps,   1,              0,           IMX219_MODE_640X480       },
 };
 
 
