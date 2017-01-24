@@ -579,7 +579,7 @@
           /* Declare PCL support driver (classically known as guid)  */
           pcl_id = "v4l2_sensor";
           /* Driver's v4l2 device name */
-          devname = "imx219 7-010";
+          devname = "imx219 7-0010";
           /* Declare the device-tree hierarchy to driver instance */
           proc-device-tree = "/proc/device-tree/host1x/i2c-camera-mux/i2c@0/imx219_a@10";
           status = "okay";
@@ -595,7 +595,7 @@
           /* Declare PCL support driver (classically known as guid)  */
           pcl_id = "v4l2_sensor";
           /* Driver's v4l2 device name */
-          devname = "imx219 8-010";
+          devname = "imx219 8-0010";
           /* Declare the device-tree hierarchy to driver instance */
           proc-device-tree = "/proc/device-tree/host1x/i2c-camera-mux/i2c@1/imx219_c@10";
           status = "okay";
@@ -611,7 +611,7 @@
           /* Declare PCL support driver (classically known as guid)  */
           pcl_id = "v4l2_sensor";
           /* Driver's v4l2 device name */
-          devname = "imx219 9-010";
+          devname = "imx219 9-0010";
           /* Declare the device-tree hierarchy to driver instance */
           proc-device-tree = "/proc/device-tree/host1x/i2c-camera-mux/i2c@2/imx219_e@10";
           status = "okay";
