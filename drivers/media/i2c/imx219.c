@@ -35,10 +35,15 @@
 
 #define IMX219_MAX_COARSE_DIFF          4
 
-#define IMX219_SHIFT_VALUE              (4)
+/*
 #define IMX219_GAIN_SHIFT               (1 << IMX219_SHIFT_VALUE)
 #define IMX219_MIN_GAIN                 (0   << IMX219_GAIN_SHIFT)
 #define IMX219_MAX_GAIN                 (10  << IMX219_GAIN_SHIFT)
+*/
+#define IMX219_GAIN_SHIFT               (8)
+
+#define IMX219_MIN_GAIN									(0 << IMX219_GAIN_SHIFT)
+#define IMX219_MAX_GAIN									(10 << IMX219_GAIN_SHIFT)
 
 #define IMX219_MIN_FRAME_LENGTH         (480)
 #define IMX219_MAX_FRAME_LENGTH         (0xFFFF)
@@ -46,14 +51,17 @@
 #define IMX219_MAX_EXPOSURE_COARSE  \
   (IMX219_MAX_FRAME_LENGTH-IMX219_MAX_COARSE_DIFF)
 
+//#define IMX219_DEFAULT_GAIN             (IMX219_MIN_GAIN)
+//#define IMX219_DEFAULT_GAIN             (0x60)
 #define IMX219_DEFAULT_GAIN             (IMX219_MIN_GAIN)
-#define IMX219_DEFAULT_FRAME_LENGTH     (853)
+#define IMX219_DEFAULT_FRAME_LENGTH     (569)
+//#define IMX219_DEFAULT_FRAME_LENGTH     (1766)
 #define IMX219_DEFAULT_EXPOSURE_COARSE  \
   (IMX219_DEFAULT_FRAME_LENGTH-IMX219_MAX_COARSE_DIFF)
 
-#define IMX219_DEFAULT_MODE             IMX219_MODE_1280X720
-#define IMX219_DEFAULT_WIDTH            1280
-#define IMX219_DEFAULT_HEIGHT           720
+#define IMX219_DEFAULT_MODE             IMX219_MODE_640X480
+#define IMX219_DEFAULT_WIDTH            640
+#define IMX219_DEFAULT_HEIGHT           480
 #define IMX219_DEFAULT_DATAFMT          V4L2_MBUS_FMT_SRGGB10_1X10
 #define IMX219_DEFAULT_CLK_FREQ         24000000
 #define IMX219_DEFAULT_MAX_FPS          90
@@ -543,30 +551,32 @@ static int imx219_set_gain(struct imx219 *priv, s32 val)
   int err;
   u32 fgain = (u32) val;
   u32 gain = 0;
-  int i = 0;
-
-   dev_info(&priv->i2c_client->dev,
-     "%s: user val: %d\n", __func__, val);
 
  
-  if (fgain < IMX219_MIN_GAIN )
-    fgain = 1 * IMX219_GAIN_SHIFT;
+/*
+  if (fgain <= 0 ) {
+    fgain = 1;
+	}
+*/
 
   dev_info(&priv->i2c_client->dev, "%s++\n", __func__);
+  dev_info(&priv->i2c_client->dev, "%s: user val: %d\n", __func__, val);
+  //dev_info(&priv->i2c_client->dev, "%s: user fgain: %d\n", __func__, fgain);
 
-/*
   // translate value
-  gain = (u32) ((256 << IMX219_GAIN_SHIFT) - ((256 << IMX219_GAIN_SHIFT) / fgain)) >> IMX219_SHIFT_VALUE;
-*/
-  gain = fgain;
-  
-  dev_info(&priv->i2c_client->dev,
-     "%s: val: %d\n", __func__, gain);
+  //gain = (u32) (((256 << IMX219_GAIN_SHIFT)  - ((256 << IMX219_GAIN_SHIFT) / (fgain))) >> IMX219_GAIN_SHIFT);
+  //gain = (u32) (224 << IMX219_GAIN_SHIFT) * (fgain) / (10 << IMX219_GAIN_SHIFT);
+  gain = (u32) (224 * fgain) / (10 << IMX219_GAIN_SHIFT);
 
+	if (gain > 224) {
+		gain = 224;
+	}
+	
+  dev_info(&priv->i2c_client->dev, "%s: calculated gain: %d\n", __func__, gain);
   imx219_get_gain_reg(reg_list, gain);
 
-  err = imx219_write_reg(priv->s_data, reg_list[i].addr,
-     reg_list[i].val);
+  err = imx219_write_reg(priv->s_data, reg_list[0].addr, reg_list[0].val);
+
   if (err)
     goto fail;
 

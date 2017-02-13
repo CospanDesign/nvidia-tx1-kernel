@@ -245,7 +245,7 @@
 		};
 	};
 
-	tegra-camera-platform {
+  tegra-camera-platform {
 		compatible = "nvidia, tegra-camera-platform";
 
 		/**

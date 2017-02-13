@@ -63,6 +63,9 @@
 			};
 		};
 
+
+
+
 		i2c@546c0000 {
 			status = "okay";
 			#address-cells = <1>;

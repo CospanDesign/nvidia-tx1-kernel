@@ -145,8 +145,8 @@
             line_length = "3448";
             dpcm_enable = "false";
  
-            min_gain_val = "0";
-            max_gain_val = "252";
+            min_gain_val = "1";
+            max_gain_val = "10";
             min_hdr_ratio = "1";
             max_hdr_ratio = "1";
             min_framerate = "64";
@@ -176,7 +176,7 @@
             //line_length = "1752";
  
             min_gain_val = "0";
-            max_gain_val = "252";
+            max_gain_val = "10";
             min_hdr_ratio = "1";
             max_hdr_ratio = "64";
             min_framerate = "1";
@@ -191,7 +191,8 @@
             //mclk_khz = "47000";
             mclk_khz = "24000";
             mclk_multiplier = "17.0";
-            pix_clk_hz = "182400000";
+            //pix_clk_hz = "182400000";
+            pix_clk_hz = "170000000";
  
             num_lanes = "2";
             tegra_sinterface = "serial_a";
@@ -199,25 +200,25 @@
             cil_settletime = "0";
             pixel_t = "bayer_rggb";
             readout_orientation = "90";
-            inherent_gain = "1";
+            inherent_gain = "0";
  
             active_w = "640";
             active_h = "480";
  
             //line_length = "752";
             //line_length = "1752";
-            //line_length = "3448";
-            line_length = "3559";
+            line_length = "3448";
+            //line_length = "3559";
             dpcm_enable = "false";
  
             min_gain_val = "0";
-            max_gain_val = "252";
+            max_gain_val = "10";
             min_hdr_ratio = "1";
             max_hdr_ratio = "1";
             min_framerate = "1";
             max_framerate = "90";
-            min_exp_time = "10";
-            max_exp_time = "683709";
+            min_exp_time = "22";
+					  max_exp_time = "358733";
             //embedded_metadata_height = "2";
           };
  
@@ -276,7 +277,7 @@
             discontinuous_clk = "yes";
             cil_settletime = "0";
             pixel_t = "bayer_rggb";
-            readout_orientation = "90";
+            readout_orientation = "270";
             inherent_gain = "1";
  
             active_w = "1920";
@@ -286,7 +287,7 @@
             dpcm_enable = "false";
  
             min_gain_val = "0";
-            max_gain_val = "252";
+            max_gain_val = "10";
             min_hdr_ratio = "1";
             max_hdr_ratio = "1";
             min_framerate = "64";
@@ -305,7 +306,7 @@
             discontinuous_clk = "yes";
             cil_settletime = "0";
             pixel_t = "bayer_rggb";
-            readout_orientation = "90";
+            readout_orientation = "270";
             inherent_gain = "1";
  
             active_w = "1280";
@@ -316,7 +317,7 @@
             //line_length = "1752";
  
             min_gain_val = "0";
-            max_gain_val = "252";
+            max_gain_val = "10";
             min_hdr_ratio = "1";
             max_hdr_ratio = "64";
             min_framerate = "1";
@@ -331,33 +332,34 @@
             //mclk_khz = "47000";
             mclk_khz = "24000";
             mclk_multiplier = "17.0";
-            pix_clk_hz = "182400000";
+            //pix_clk_hz = "182400000";
+            pix_clk_hz = "170000000";
  
             num_lanes = "2";
             tegra_sinterface = "serial_c";
             discontinuous_clk = "yes";
             cil_settletime = "0";
             pixel_t = "bayer_rggb";
-            readout_orientation = "90";
-            inherent_gain = "1";
+            readout_orientation = "270";
+            inherent_gain = "0";
  
             active_w = "640";
             active_h = "480";
  
             //line_length = "752";
             //line_length = "1752";
-            //line_length = "3448";
-            line_length = "3559";
+            line_length = "3448";
+            //line_length = "3559";
             dpcm_enable = "false";
  
             min_gain_val = "0";
-            max_gain_val = "252";
+            max_gain_val = "10";
             min_hdr_ratio = "1";
             max_hdr_ratio = "1";
             min_framerate = "1";
             max_framerate = "90";
-            min_exp_time = "10";
-            max_exp_time = "683709";
+            min_exp_time = "22";
+					  max_exp_time = "358733";
             //embedded_metadata_height = "2";
           };
  
@@ -416,7 +418,7 @@
             discontinuous_clk = "yes";
             cil_settletime = "0";
             pixel_t = "bayer_rggb";
-            readout_orientation = "90";
+            readout_orientation = "270";
             inherent_gain = "1";
  
             active_w = "1920";
@@ -426,7 +428,7 @@
             dpcm_enable = "false";
  
             min_gain_val = "0";
-            max_gain_val = "252";
+            max_gain_val = "10";
             min_hdr_ratio = "1";
             max_hdr_ratio = "1";
             min_framerate = "64";
@@ -445,7 +447,7 @@
             discontinuous_clk = "yes";
             cil_settletime = "0";
             pixel_t = "bayer_rggb";
-            readout_orientation = "90";
+            readout_orientation = "270";
             inherent_gain = "1";
  
             active_w = "1280";
@@ -456,7 +458,7 @@
             //line_length = "1752";
  
             min_gain_val = "0";
-            max_gain_val = "252";
+            max_gain_val = "10";
             min_hdr_ratio = "1";
             max_hdr_ratio = "64";
             min_framerate = "1";
@@ -467,37 +469,38 @@
             //embedded_metadata_height = "2";
           };
           mode2 { // IMX219_MODE_640X480
- 
+
             //mclk_khz = "47000";
             mclk_khz = "24000";
             mclk_multiplier = "17.0";
-            pix_clk_hz = "182400000";
+            //pix_clk_hz = "182400000";
+            pix_clk_hz = "170000000";
  
             num_lanes = "2";
             tegra_sinterface = "serial_e";
             discontinuous_clk = "yes";
             cil_settletime = "0";
             pixel_t = "bayer_rggb";
-            readout_orientation = "90";
-            inherent_gain = "1";
+            readout_orientation = "270";
+            inherent_gain = "0";
  
             active_w = "640";
             active_h = "480";
  
             //line_length = "752";
             //line_length = "1752";
-            //line_length = "3448";
-            line_length = "3559";
+            line_length = "3448";
+            //line_length = "3559";
             dpcm_enable = "false";
  
             min_gain_val = "0";
-            max_gain_val = "252";
+            max_gain_val = "10";
             min_hdr_ratio = "1";
             max_hdr_ratio = "1";
             min_framerate = "1";
             max_framerate = "90";
-            min_exp_time = "10";
-            max_exp_time = "683709";
+            min_exp_time = "22";
+					  max_exp_time = "358733";
             //embedded_metadata_height = "2";
           };
  
