@@ -222,6 +222,10 @@ static struct platform_device t210ref_imx219_front_left_soc_camera_device = {
 	},
 };
 
+
+
+
+
 #endif
 
 #if IS_ENABLED(CONFIG_VIDEO_OV5647)
@@ -647,6 +651,18 @@ int t210ref_camera_init(void)
     else
       pr_warning("%s: Did not find imx219_e in device tree\n", __func__);
 	}
+
+  if (of_machine_is_compatible("nvidia,jetson-cv")){
+    if (of_find_node_by_name(NULL, "imx219_a"))
+    {
+      pr_info("%s: Detected IMX219 A in Device Tree\n", __func__);
+		  platform_device_register(&t210ref_imx219_bottom_soc_camera_device);
+    }
+    else
+      pr_warning("%s: Did not find imx219_a in device tree\n", __func__);
+
+
+  }
 
 #endif
 #if IS_ENABLED(CONFIG_VIDEO_OV5647)

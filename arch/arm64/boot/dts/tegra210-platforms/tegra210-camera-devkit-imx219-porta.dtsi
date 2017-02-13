@@ -1,0 +1,322 @@
+/*
+ * Copyright (c) 2015-2016, NVIDIA CORPORATION.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <dt-bindings/media/camera.h>
+#include <dt-bindings/platform/t210/t210.h>
+
+#define GANG_MODE_L_R 1
+#define GANG_MODE_T_B 2
+#define GANG_MODE_R_L 3
+#define GANG_MODE_B_T 4
+
+
+//CHANGE THESE PORTS FOR THE CAMERA RESET, THERE IS NO POWER
+#define CAM0_RST_L	TEGRA_GPIO(S, 7)
+
+//GPIOs
+/ {
+	/* set camera gpio direction to output */
+	gpio: gpio@6000d000 {
+		camera-control {
+			gpio-output-low = <
+												CAM0_RST_L
+                        >;
+		};
+	};
+};
+
+
+/ {
+	host1x {
+		vi_base: vi {
+			num-channels = <1>;
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				vi_port0: port@0 {
+					status = "okay";
+					reg = <0>;
+					imx219_vi_in0: endpoint {
+						status = "okay";
+						csi-port = <0>;
+						bus-width = <2>;
+						remote-endpoint = <&imx219_out0>;
+					};
+				};
+			};
+		};
+
+
+
+
+		i2c@546c0000 {
+			status = "okay";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			imx219_c@10 {
+        compatible = "nvidia,imx219";
+        devnode="video0";
+        // I2C Device Address
+        reg = <0x10>;
+        reset-gpios = <&gpio CAM0_RST_L GPIO_ACTIVE_LOW>;
+
+        //Physical Dimenstion of sensor
+        physical_w = "5.095";
+        physical_h = "4.930";
+
+        //Sensor Model
+        sensor_model ="imx219";
+
+        //avdd-reg = "vana";
+        //iovdd-reg = "vif";
+        //dvdd-reg = "vdig";
+        clocks = <&tegra_car TEGRA210_CLK_ID_CLK_OUT_3>;
+        clock-names = "mclk";
+        clock-frequency = <24000000>;
+        mclk = "cam_mclk1";
+
+        post_crop_frame_drop = "0";
+
+				/**
+				* A modeX node is required to support v4l2 driver
+				* implementation with NVIDIA camera software stack
+				*
+				* mclk_khz = "";
+				* Standard MIPI driving clock, typically 24MHz
+				*
+				* num_lanes = "";
+				* Number of lane channels sensor is programmed to output
+				*
+				* tegra_sinterface = "";
+				* The base tegra serial interface lanes are connected to
+				*
+				* discontinuous_clk = "";
+				* The sensor is programmed to use a discontinuous clock on MIPI lanes
+				*
+				* dpcm_enable = "true";
+				* The sensor is programmed to use a DPCM modes
+				*
+				* cil_settletime = "";
+				* MIPI lane settle time value.
+				* A "0" value attempts to autocalibrate based on mclk_multiplier
+				*
+				*
+				*
+				*
+				* active_w = "";
+				* Pixel active region width
+				*
+				* active_h = "";
+				* Pixel active region height
+				*
+				* pixel_t = "";
+				* The sensor readout pixel pattern
+				*
+				* readout_orientation = "0";
+				* Based on camera module orientation.
+				* Only change readout_orientation if you specifically
+				* Program a different readout order for this mode
+				*
+				* line_length = "";
+				* Pixel line length (width) for sensor mode.
+				* This is used to calibrate features in our camera stack.
+				*
+				* mclk_multiplier = "";
+				* Multiplier to MCLK to help time hardware capture sequence
+				* TODO: Assign to PLL_Multiplier as well until fixed in core
+				*
+				* pix_clk_hz = "";
+				* Sensor pixel clock used for calculations like exposure and framerate
+				*
+				*
+				*
+				*
+				* inherent_gain = "";
+				* Gain obtained inherently from mode (ie. pixel binning)
+				*
+				* min_gain_val = ""; (floor to 6 decimal places)
+				* max_gain_val = ""; (floor to 6 decimal places)
+				* Gain limits for mode
+				*
+				* min_exp_time = ""; (ceil to integer)
+				* max_exp_time = ""; (ceil to integer)
+				* Exposure Time limits for mode (us)
+				*
+				*
+				* min_hdr_ratio = "";
+				* max_hdr_ratio = "";
+				* HDR Ratio limits for mode
+				*
+				* min_framerate = "";
+				* max_framerate = "";
+				* Framerate limits for mode (fps)
+				*
+				* embedded_metadata_height = "";
+				* Sensor embedded metadata height in units of rows.
+				* If sensor does not support embedded metadata value should be 0.
+				*/
+
+        mode0 { // IMX219_MODE_1920X1080
+          mclk_khz = "24000";
+          mclk_multiplier = "25";
+          //pix_clk_hz = "182400000";
+          pix_clk_hz = "170000000";
+
+          num_lanes = "2";
+          tegra_sinterface = "serial_a";
+          discontinuous_clk = "yes";
+          cil_settletime = "0";
+          pixel_t = "bayer_rggb";
+          readout_orientation = "90";
+          inherent_gain = "1";
+
+          active_w = "1920";
+          active_h = "1080";
+
+          line_length = "3448";
+          dpcm_enable = "false";
+
+          min_gain_val = "1";
+          max_gain_val = "10";
+          min_hdr_ratio = "1";
+          max_hdr_ratio = "1";
+          min_framerate = "64";
+          max_framerate = "30";
+          min_exp_time = "13";
+          max_exp_time = "683709";
+          //embedded_metadata_height = "2";
+        };
+        mode1 { // IMX219_MODE_1280X720
+          mclk_khz = "24000";
+          mclk_multiplier = "25";
+          pix_clk_hz = "170000000";
+
+          num_lanes = "2";
+          tegra_sinterface = "serial_a";
+          discontinuous_clk = "yes";
+          cil_settletime = "0";
+          pixel_t = "bayer_rggb";
+          readout_orientation = "90";
+          inherent_gain = "1";
+
+          active_w = "1280";
+          active_h = "720";
+
+          line_length = "3448";
+          dpcm_enable = "false";
+          //line_length = "1752";
+
+          min_gain_val = "0";
+          max_gain_val = "10";
+          min_hdr_ratio = "1";
+          max_hdr_ratio = "64";
+          min_framerate = "1";
+          max_framerate = "60";
+          //min_exp_time = "16";
+          min_exp_time = "13";
+          max_exp_time = "683709";
+          //embedded_metadata_height = "2";
+        };
+        mode2 { // IMX219_MODE_640X480
+
+          //mclk_khz = "47000";
+          mclk_khz = "24000";
+          mclk_multiplier = "17.0";
+          //pix_clk_hz = "182400000";
+          pix_clk_hz = "170000000";
+
+          num_lanes = "2";
+          tegra_sinterface = "serial_a";
+          discontinuous_clk = "yes";
+          cil_settletime = "0";
+          pixel_t = "bayer_rggb";
+          readout_orientation = "90";
+          inherent_gain = "0";
+
+          active_w = "640";
+          active_h = "480";
+
+          //line_length = "752";
+          //line_length = "1752";
+          line_length = "3448";
+          //line_length = "3559";
+          dpcm_enable = "false";
+
+          min_gain_val = "0";
+          max_gain_val = "10";
+          min_hdr_ratio = "1";
+          max_hdr_ratio = "1";
+          min_framerate = "1";
+          max_framerate = "90";
+          min_exp_time = "22";
+				  max_exp_time = "358733";
+          //embedded_metadata_height = "2";
+        };
+
+				ports {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					port@0 {
+						reg = <0>;
+						imx219_out0: endpoint {
+							csi-port = <0>;
+							bus-width = <2>;
+							remote-endpoint = <&imx219_vi_in0>;
+						};
+					};
+				};
+			};
+
+		};
+	};
+
+	tegra-camera-platform {
+		compatible = "nvidia, tegra-camera-platform";
+
+		/**
+		* The general guideline for naming badge_info contains 3 parts, and is as follows,
+		* The first part is the camera_board_id for the module; if the module is in a FFD
+		* platform, then use the platform name for this part.
+		* The second part contains the position of the module, ex. “rear” or “front”.
+		* The third part contains the last 6 characters of a part number which is found
+		* in the module's specsheet from the vender.
+		*/
+		modules {
+			cam_module0: module0 {
+				badge = "imx219_back";
+				position = "rear";
+				orientation = "1";
+				cam_module0_drivernode0: drivernode0 {
+					/* Declare PCL support driver (classically known as guid)  */
+					pcl_id = "v4l2_sensor";
+					/* Driver's v4l2 device name */
+					devname = "imx219 6-001a";
+					/* Declare the device-tree hierarchy to driver instance */
+					proc-device-tree = "/proc/device-tree/host1x/i2c@546c0000/imx219_c@10";
+          status = "okay";
+				};
+        cam_module0_dirvernode1: drivernode1 {
+					status = "disabled";
+					pcl_id = "v4l2_focuser_stub";
+					proc-device-tree = "";
+
+        };
+			};
+		};
+	};
+};
