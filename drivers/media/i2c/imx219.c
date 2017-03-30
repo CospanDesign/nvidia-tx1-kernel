@@ -42,8 +42,8 @@
 */
 #define IMX219_GAIN_SHIFT               (8)
 
-#define IMX219_MIN_GAIN									(0 << IMX219_GAIN_SHIFT)
-#define IMX219_MAX_GAIN									(10 << IMX219_GAIN_SHIFT)
+#define IMX219_MIN_GAIN									(1 << IMX219_GAIN_SHIFT)
+#define IMX219_MAX_GAIN									(16 << IMX219_GAIN_SHIFT)
 
 #define IMX219_MIN_FRAME_LENGTH         (480)
 #define IMX219_MAX_FRAME_LENGTH         (0xFFFF)
