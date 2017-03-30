@@ -146,10 +146,10 @@
             dpcm_enable = "false";
  
             min_gain_val = "1";
-            max_gain_val = "10";
+            max_gain_val = "16";
             min_hdr_ratio = "1";
-            max_hdr_ratio = "1";
-            min_framerate = "64";
+            max_hdr_ratio = "64";
+            min_framerate = "1";
             max_framerate = "30";
             min_exp_time = "13";
             max_exp_time = "683709";
@@ -175,8 +175,8 @@
             dpcm_enable = "false";
             //line_length = "1752";
  
-            min_gain_val = "0";
-            max_gain_val = "10";
+            min_gain_val = "1";
+            max_gain_val = "16";
             min_hdr_ratio = "1";
             max_hdr_ratio = "64";
             min_framerate = "1";
@@ -211,10 +211,10 @@
             //line_length = "3559";
             dpcm_enable = "false";
  
-            min_gain_val = "0";
-            max_gain_val = "10";
+            min_gain_val = "1";
+            max_gain_val = "16";
             min_hdr_ratio = "1";
-            max_hdr_ratio = "1";
+            max_hdr_ratio = "64";
             min_framerate = "1";
             max_framerate = "90";
             min_exp_time = "22";
@@ -286,11 +286,11 @@
             line_length = "3448";
             dpcm_enable = "false";
  
-            min_gain_val = "0";
-            max_gain_val = "10";
+            min_gain_val = "1";
+            max_gain_val = "16";
             min_hdr_ratio = "1";
-            max_hdr_ratio = "1";
-            min_framerate = "64";
+            max_hdr_ratio = "64";
+            min_framerate = "1";
             max_framerate = "30";
             min_exp_time = "13";
             max_exp_time = "683709";
@@ -316,8 +316,8 @@
             dpcm_enable = "false";
             //line_length = "1752";
  
-            min_gain_val = "0";
-            max_gain_val = "10";
+            min_gain_val = "1";
+            max_gain_val = "16";
             min_hdr_ratio = "1";
             max_hdr_ratio = "64";
             min_framerate = "1";
@@ -352,10 +352,10 @@
             //line_length = "3559";
             dpcm_enable = "false";
  
-            min_gain_val = "0";
-            max_gain_val = "10";
+            min_gain_val = "1";
+            max_gain_val = "16";
             min_hdr_ratio = "1";
-            max_hdr_ratio = "1";
+            max_hdr_ratio = "64";
             min_framerate = "1";
             max_framerate = "90";
             min_exp_time = "22";
@@ -427,11 +427,11 @@
             line_length = "3448";
             dpcm_enable = "false";
  
-            min_gain_val = "0";
-            max_gain_val = "10";
+            min_gain_val = "1";
+            max_gain_val = "16";
             min_hdr_ratio = "1";
-            max_hdr_ratio = "1";
-            min_framerate = "64";
+            max_hdr_ratio = "64";
+            min_framerate = "1";
             max_framerate = "30";
             min_exp_time = "13";
             max_exp_time = "683709";
@@ -457,8 +457,8 @@
             dpcm_enable = "false";
             //line_length = "1752";
  
-            min_gain_val = "0";
-            max_gain_val = "10";
+            min_gain_val = "1";
+            max_gain_val = "16";
             min_hdr_ratio = "1";
             max_hdr_ratio = "64";
             min_framerate = "1";
@@ -493,10 +493,10 @@
             //line_length = "3559";
             dpcm_enable = "false";
  
-            min_gain_val = "0";
-            max_gain_val = "10";
+            min_gain_val = "1";
+            max_gain_val = "16";
             min_hdr_ratio = "1";
-            max_hdr_ratio = "1";
+            max_hdr_ratio = "64";
             min_framerate = "1";
             max_framerate = "90";
             min_exp_time = "22";
