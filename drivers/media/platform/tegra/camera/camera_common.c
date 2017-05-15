@@ -429,11 +429,20 @@ int camera_common_try_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *mf)
 	s_data->fmt_height = s_data->def_height;
 	s_data->fmt_maxfps = s_data->def_maxfps;
 
-  dev_info(&client->dev, "%s: Using Sensor Mode: %d\n", __func__, s_data->sensor_mode_id);
+  dev_info(&client->dev, "%s: Default Sensor Mode:\n", __func__);
+  dev_info(&client->dev, "%s: Mode:       %d\n", __func__, s_data->sensor_mode_id);
   dev_info(&client->dev, "%s: \tWidth:    %d\n", __func__, s_data->fmt_width);
   dev_info(&client->dev, "%s: \tHeight:   %d\n", __func__, s_data->fmt_height);
   dev_info(&client->dev, "%s: \tMAX FPS:  %d\n", __func__, s_data->fmt_maxfps);
   dev_info(&client->dev, "%s: \tHDR En:   %d\n", __func__, hdr_en);
+  dev_info(&client->dev, "%s: \n", __func__);
+
+  dev_info(&client->dev, "%s: Requested Sensor Mode:\n", __func__);
+  dev_info(&client->dev, "%s: \tWidth:    %d\n", __func__, mf->width);
+  dev_info(&client->dev, "%s: \tHeight:   %d\n", __func__, mf->height);
+  dev_info(&client->dev, "%s: \tMAX FPS:  %d\n", __func__, mf->maxframerate);
+  dev_info(&client->dev, "%s: \n", __func__);
+
 
 	if (s_data->use_sensor_mode_id &&
 		s_data->sensor_mode_id >= 0 &&
@@ -445,6 +454,7 @@ int camera_common_try_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *mf)
 		s_data->fmt_height = mf->height;
 		s_data->fmt_maxfps = mf->maxframerate;
 	} else {
+    dev_info(&client->dev, "%s: Do not use the \"mode\" to identify sensor, instead use size...\n", __func__);
     dev_info(&client->dev, "%s: Enumerating Through Sensors\n", __func__);
 		for (i = 0; i < s_data->numfmts; i++) {
       dev_info(&client->dev, "%s: Looking at Sensor Mode: %d\n", __func__, i);
@@ -457,6 +467,7 @@ int camera_common_try_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *mf)
 				  mf->height == frmfmt[i].size.height &&
 					//mf->maxframerate == frmfmt[i].framerates[0] &&
 					hdr_en == frmfmt[i].hdr_en) {
+          dev_info(&client->dev, "%s: Found a match, Mode: %d\n", __func__, s_data->sensor_mode_id);
 					s_data->mode = frmfmt[i].mode;
 					s_data->fmt_width = mf->width;
 					s_data->fmt_height = mf->height;
@@ -484,6 +495,7 @@ int camera_common_try_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt *mf)
 
 	mf->field = V4L2_FIELD_NONE;
 	mf->colorspace = V4L2_COLORSPACE_SRGB;
+  dev_info(&client->dev, "%s: \n", __func__);
 
 	return err;
 }

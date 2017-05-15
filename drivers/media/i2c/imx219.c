@@ -41,12 +41,13 @@
 #define IMX219_MAX_GAIN                 (10  << IMX219_GAIN_SHIFT)
 */
 #define IMX219_GAIN_SHIFT               (8)
-
 #define IMX219_MIN_GAIN									(1 << IMX219_GAIN_SHIFT)
 #define IMX219_MAX_GAIN									(16 << IMX219_GAIN_SHIFT)
 
-#define IMX219_MIN_FRAME_LENGTH         (480)
-#define IMX219_MAX_FRAME_LENGTH         (0xFFFF)
+//#define IMX219_MIN_FRAME_LENGTH         (480)
+#define IMX219_MIN_FRAME_LENGTH         (0x0)
+//#define IMX219_MAX_FRAME_LENGTH         (0xFFFF)
+#define IMX219_MAX_FRAME_LENGTH         (0x7FFF)
 #define IMX219_MIN_EXPOSURE_COARSE      (0x0001)
 #define IMX219_MAX_EXPOSURE_COARSE  \
   (IMX219_MAX_FRAME_LENGTH-IMX219_MAX_COARSE_DIFF)
@@ -54,14 +55,18 @@
 //#define IMX219_DEFAULT_GAIN             (IMX219_MIN_GAIN)
 //#define IMX219_DEFAULT_GAIN             (0x60)
 #define IMX219_DEFAULT_GAIN             (IMX219_MIN_GAIN)
-#define IMX219_DEFAULT_FRAME_LENGTH     (569)
-//#define IMX219_DEFAULT_FRAME_LENGTH     (1766)
+//#define IMX219_DEFAULT_FRAME_LENGTH     (569)
+#define IMX219_DEFAULT_FRAME_LENGTH     (1766)
 #define IMX219_DEFAULT_EXPOSURE_COARSE  \
   (IMX219_DEFAULT_FRAME_LENGTH-IMX219_MAX_COARSE_DIFF)
 
-#define IMX219_DEFAULT_MODE             IMX219_MODE_640X480
-#define IMX219_DEFAULT_WIDTH            640
-#define IMX219_DEFAULT_HEIGHT           480
+//#define IMX219_DEFAULT_MODE             IMX219_MODE_640X480
+//#define IMX219_DEFAULT_WIDTH            640
+//#define IMX219_DEFAULT_HEIGHT           480
+
+#define IMX219_DEFAULT_MODE             IMX219_MODE_1920X1080
+#define IMX219_DEFAULT_WIDTH            1920
+#define IMX219_DEFAULT_HEIGHT           1080
 #define IMX219_DEFAULT_DATAFMT          V4L2_MBUS_FMT_SRGGB10_1X10
 #define IMX219_DEFAULT_CLK_FREQ         24000000
 #define IMX219_DEFAULT_MAX_FPS          90
@@ -69,7 +74,7 @@
 struct imx219 {
   struct mutex      imx219_camera_lock;
   struct camera_common_power_rail power;
-  int       num_ctrls;
+  int       numctrls;
   struct v4l2_ctrl_handler  ctrl_handler;
   struct i2c_client   *i2c_client;
   struct v4l2_subdev    *subdev;
@@ -151,7 +156,6 @@ static struct v4l2_ctrl_config ctrl_config_list[] = {
     .def = 0,
     .qmenu_int = switch_ctrl_qmenu,
   },
-/*
   {
     .ops = &imx219_ctrl_ops,
     .id = V4L2_CID_FUSE_ID,
@@ -162,7 +166,6 @@ static struct v4l2_ctrl_config ctrl_config_list[] = {
     .max = IMX219_FUSE_ID_STR_SIZE,
     .step = 2,
   },
-*/
 };
 
 static inline void imx219_get_frame_length_regs(struct reg_8 *regs, u16 frame_length)
@@ -721,17 +724,17 @@ static int imx219_ctrls_init(struct imx219 *priv)
 {
   struct i2c_client *client = priv->i2c_client;
   struct v4l2_ctrl *ctrl;
-  int num_ctrls;
+  int numctrls;
   int err;
   int i;
 
   dev_info(&client->dev, "%s++\n", __func__);
 
-  err = imx219_write_table(priv, mode_table[IMX219_MODE_COMMON]);
-  num_ctrls = ARRAY_SIZE(ctrl_config_list);
-  v4l2_ctrl_handler_init(&priv->ctrl_handler, num_ctrls);
+  //err = imx219_write_table(priv, mode_table[IMX219_MODE_COMMON]);
+  numctrls = ARRAY_SIZE(ctrl_config_list);
+  v4l2_ctrl_handler_init(&priv->ctrl_handler, numctrls);
 
-  for (i = 0; i < num_ctrls; i++) {
+  for (i = 0; i < numctrls; i++) {
     ctrl = v4l2_ctrl_new_custom(&priv->ctrl_handler,
       &ctrl_config_list[i], NULL);
     if (ctrl == NULL) {
@@ -740,7 +743,6 @@ static int imx219_ctrls_init(struct imx219 *priv)
       continue;
     }
 
-/*
     if (ctrl_config_list[i].type == V4L2_CTRL_TYPE_STRING &&
       ctrl_config_list[i].flags & V4L2_CTRL_FLAG_READ_ONLY) {
       ctrl->string = devm_kzalloc(&client->dev,
@@ -751,11 +753,10 @@ static int imx219_ctrls_init(struct imx219 *priv)
         return -ENOMEM;
       }
     }
-*/
     priv->ctrls[i] = ctrl;
   }
 
-  priv->num_ctrls = num_ctrls;
+  priv->numctrls = numctrls;
   priv->subdev->ctrl_handler = &priv->ctrl_handler;
   if (priv->ctrl_handler.error) {
     dev_err(&client->dev, "Error %d adding controls\n",
@@ -913,7 +914,8 @@ static int imx219_probe(struct i2c_client *client,
   common_data->ops          = &imx219_common_ops;
   common_data->ctrl_handler = &priv->ctrl_handler;
   common_data->i2c_client   = client;
-  common_data->frmfmt       = imx219_frmfmt;
+  common_data->frmfmt       = &imx219_frmfmt[0];
+  //common_data->frmfmt       = imx219_frmfmt;
   common_data->colorfmt     = camera_common_find_datafmt(IMX219_DEFAULT_DATAFMT);
   common_data->power        = &priv->power;
   common_data->ctrls        = priv->ctrls;
@@ -921,6 +923,7 @@ static int imx219_probe(struct i2c_client *client,
   common_data->ident        = V4L2_IDENT_IMX219;
   common_data->numctrls     = ARRAY_SIZE(ctrl_config_list);
   common_data->numfmts      = ARRAY_SIZE(imx219_frmfmt);
+  //common_data->numfmts      = 3;
   common_data->def_mode     = IMX219_DEFAULT_MODE;
   common_data->def_width    = IMX219_DEFAULT_WIDTH;
   common_data->def_height   = IMX219_DEFAULT_HEIGHT;
