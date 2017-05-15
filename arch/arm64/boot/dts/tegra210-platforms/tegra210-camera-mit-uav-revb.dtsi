@@ -107,14 +107,23 @@
           // I2C Device Address
           reg = <0x10>;
           reset-gpios = <&gpio CAM0_RST_L GPIO_ACTIVE_LOW>;
- 
+
           //Physical Dimenstion of sensor
           physical_w = "5.095";
           physical_h = "4.930";
- 
+
           //Sensor Model
           sensor_model ="imx219";
- 
+
+//XXX: Experiment
+					dovdd-supply = <&en_vdd_cam>;
+          avdd-reg = "vana";
+          dvdd-reg = "vdig";
+					//iovdd-reg = "dovdd";
+          iovdd-reg = "vif";
+//XXX: Experiment
+
+
           //avdd-reg = "vana";
           //iovdd-reg = "vif";
           //dvdd-reg = "vdig";
@@ -122,15 +131,16 @@
           clock-names = "mclk";
           clock-frequency = <24000000>;
           mclk = "cam_mclk1";
- 
+
           post_crop_frame_drop = "0";
- 
+
           mode0 { // IMX219_MODE_1920X1080
             mclk_khz = "24000";
-            mclk_multiplier = "25";
-            //pix_clk_hz = "182400000";
-            pix_clk_hz = "170000000";
- 
+            //mclk_multiplier = "25";
+            mclk_multiplier = "17.0";
+            pix_clk_hz = "182400000";
+            //pix_clk_hz = "170000000";
+
             num_lanes = "2";
             tegra_sinterface = "serial_a";
             discontinuous_clk = "yes";
@@ -138,28 +148,29 @@
             pixel_t = "bayer_rggb";
             readout_orientation = "90";
             inherent_gain = "1";
- 
+
             active_w = "1920";
             active_h = "1080";
- 
+
             line_length = "3448";
             dpcm_enable = "false";
- 
-            min_gain_val = "1";
+
+            min_gain_val = "1.0";
             max_gain_val = "16";
             min_hdr_ratio = "1";
             max_hdr_ratio = "64";
             min_framerate = "1";
             max_framerate = "30";
-            min_exp_time = "13";
+            min_exp_time = "33";
             max_exp_time = "683709";
-            //embedded_metadata_height = "2";
+            embedded_metadata_height = "2";
           };
           mode1 { // IMX219_MODE_1280X720
             mclk_khz = "24000";
             mclk_multiplier = "25";
-            pix_clk_hz = "170000000";
- 
+            pix_clk_hz = "182400000";
+            //pix_clk_hz = "170000000";
+
             num_lanes = "2";
             tegra_sinterface = "serial_a";
             discontinuous_clk = "yes";
@@ -167,14 +178,14 @@
             pixel_t = "bayer_rggb";
             readout_orientation = "90";
             inherent_gain = "1";
- 
+
             active_w = "1280";
             active_h = "720";
- 
+
             line_length = "3448";
             dpcm_enable = "false";
             //line_length = "1752";
- 
+
             min_gain_val = "1";
             max_gain_val = "16";
             min_hdr_ratio = "1";
@@ -187,13 +198,13 @@
             //embedded_metadata_height = "2";
           };
           mode2 { // IMX219_MODE_640X480
- 
+
             //mclk_khz = "47000";
             mclk_khz = "24000";
             mclk_multiplier = "17.0";
-            //pix_clk_hz = "182400000";
-            pix_clk_hz = "170000000";
- 
+            pix_clk_hz = "182400000";
+            //pix_clk_hz = "170000000";
+
             num_lanes = "2";
             tegra_sinterface = "serial_a";
             discontinuous_clk = "yes";
@@ -201,16 +212,16 @@
             pixel_t = "bayer_rggb";
             readout_orientation = "90";
             inherent_gain = "0";
- 
+
             active_w = "640";
             active_h = "480";
- 
+
             //line_length = "752";
             //line_length = "1752";
             line_length = "3448";
             //line_length = "3559";
             dpcm_enable = "false";
- 
+
             min_gain_val = "1";
             max_gain_val = "16";
             min_hdr_ratio = "1";
@@ -221,11 +232,11 @@
 					  max_exp_time = "358733";
             //embedded_metadata_height = "2";
           };
- 
+
           ports {
             #address-cells = <1>;
             #size-cells = <0>;
- 
+
             port@0 {
               reg = <0>;
               imx219_out0: endpoint {
@@ -248,14 +259,14 @@
           // I2C Device Address
           reg = <0x10>;
           reset-gpios = <&gpio CAM1_RST_L GPIO_ACTIVE_LOW>;
- 
+
           //Physical Dimenstion of sensor
           physical_w = "5.095";
           physical_h = "4.930";
- 
+
           //Sensor Model
           sensor_model ="imx219";
- 
+
           //avdd-reg = "vana";
           //iovdd-reg = "vif";
           //dvdd-reg = "vdig";
@@ -263,29 +274,30 @@
 				  clock-names = "mclk";
           clock-frequency = <24000000>;
           mclk = "cam_mclk1";
- 
+
           post_crop_frame_drop = "0";
- 
+
           mode0 { // IMX219_MODE_1920X1080
             mclk_khz = "24000";
             mclk_multiplier = "25";
-            //pix_clk_hz = "182400000";
-            pix_clk_hz = "170000000";
- 
+            pix_clk_hz = "182400000";
+            //pix_clk_hz = "170000000";
+
             num_lanes = "2";
             tegra_sinterface = "serial_c";
             discontinuous_clk = "yes";
             cil_settletime = "0";
             pixel_t = "bayer_rggb";
             readout_orientation = "270";
+            //readout_orientation = "90";
             inherent_gain = "1";
- 
+
             active_w = "1920";
             active_h = "1080";
- 
+
             line_length = "3448";
             dpcm_enable = "false";
- 
+
             min_gain_val = "1";
             max_gain_val = "16";
             min_hdr_ratio = "1";
@@ -299,8 +311,9 @@
           mode1 { // IMX219_MODE_1280X720
             mclk_khz = "24000";
             mclk_multiplier = "25";
-            pix_clk_hz = "170000000";
- 
+            pix_clk_hz = "182400000";
+            //pix_clk_hz = "170000000";
+
             num_lanes = "2";
             tegra_sinterface = "serial_c";
             discontinuous_clk = "yes";
@@ -308,14 +321,14 @@
             pixel_t = "bayer_rggb";
             readout_orientation = "270";
             inherent_gain = "1";
- 
+
             active_w = "1280";
             active_h = "720";
- 
+
             line_length = "3448";
             dpcm_enable = "false";
             //line_length = "1752";
- 
+
             min_gain_val = "1";
             max_gain_val = "16";
             min_hdr_ratio = "1";
@@ -328,13 +341,13 @@
             //embedded_metadata_height = "2";
           };
           mode2 { // IMX219_MODE_640X480
- 
+
             //mclk_khz = "47000";
             mclk_khz = "24000";
             mclk_multiplier = "17.0";
-            //pix_clk_hz = "182400000";
-            pix_clk_hz = "170000000";
- 
+            pix_clk_hz = "182400000";
+            //pix_clk_hz = "170000000";
+
             num_lanes = "2";
             tegra_sinterface = "serial_c";
             discontinuous_clk = "yes";
@@ -342,16 +355,16 @@
             pixel_t = "bayer_rggb";
             readout_orientation = "270";
             inherent_gain = "0";
- 
+
             active_w = "640";
             active_h = "480";
- 
+
             //line_length = "752";
             //line_length = "1752";
             line_length = "3448";
             //line_length = "3559";
             dpcm_enable = "false";
- 
+
             min_gain_val = "1";
             max_gain_val = "16";
             min_hdr_ratio = "1";
@@ -362,11 +375,11 @@
 					  max_exp_time = "358733";
             //embedded_metadata_height = "2";
           };
- 
+
           ports {
             #address-cells = <1>;
             #size-cells = <0>;
- 
+
             port@0 {
               reg = <0>;
               imx219_out1: endpoint {
@@ -389,30 +402,28 @@
           // I2C Device Address
           reg = <0x10>;
           reset-gpios = <&gpio CAM2_RST_L GPIO_ACTIVE_LOW>;
- 
+
           //Physical Dimenstion of sensor
           physical_w = "5.095";
           physical_h = "4.930";
- 
+
           //Sensor Model
           sensor_model ="imx219";
- 
-          //avdd-reg = "vana";
-          //iovdd-reg = "vif";
-          //dvdd-reg = "vdig";
+
+
           clocks = <&tegra_car TEGRA210_CLK_ID_CLK_OUT_3>;
 				  clock-names = "mclk";
           clock-frequency = <24000000>;
           mclk = "cam_mclk1";
- 
+
           post_crop_frame_drop = "0";
- 
+
           mode0 { // IMX219_MODE_1920X1080
             mclk_khz = "24000";
             mclk_multiplier = "25";
-            //pix_clk_hz = "182400000";
-            pix_clk_hz = "170000000";
- 
+            pix_clk_hz = "182400000";
+            //pix_clk_hz = "170000000";
+
             num_lanes = "2";
             tegra_sinterface = "serial_e";
             discontinuous_clk = "yes";
@@ -420,13 +431,13 @@
             pixel_t = "bayer_rggb";
             readout_orientation = "270";
             inherent_gain = "1";
- 
+
             active_w = "1920";
             active_h = "1080";
- 
+
             line_length = "3448";
             dpcm_enable = "false";
- 
+
             min_gain_val = "1";
             max_gain_val = "16";
             min_hdr_ratio = "1";
@@ -440,8 +451,9 @@
           mode1 { // IMX219_MODE_1280X720
             mclk_khz = "24000";
             mclk_multiplier = "25";
-            pix_clk_hz = "170000000";
- 
+            pix_clk_hz = "182400000";
+            //pix_clk_hz = "170000000";
+
             num_lanes = "2";
             tegra_sinterface = "serial_e";
             discontinuous_clk = "yes";
@@ -449,14 +461,14 @@
             pixel_t = "bayer_rggb";
             readout_orientation = "270";
             inherent_gain = "1";
- 
+
             active_w = "1280";
             active_h = "720";
- 
+
             line_length = "3448";
             dpcm_enable = "false";
             //line_length = "1752";
- 
+
             min_gain_val = "1";
             max_gain_val = "16";
             min_hdr_ratio = "1";
@@ -473,9 +485,9 @@
             //mclk_khz = "47000";
             mclk_khz = "24000";
             mclk_multiplier = "17.0";
-            //pix_clk_hz = "182400000";
-            pix_clk_hz = "170000000";
- 
+            pix_clk_hz = "182400000";
+            //pix_clk_hz = "170000000";
+
             num_lanes = "2";
             tegra_sinterface = "serial_e";
             discontinuous_clk = "yes";
@@ -483,16 +495,16 @@
             pixel_t = "bayer_rggb";
             readout_orientation = "270";
             inherent_gain = "0";
- 
+
             active_w = "640";
             active_h = "480";
- 
+
             //line_length = "752";
             //line_length = "1752";
             line_length = "3448";
             //line_length = "3559";
             dpcm_enable = "false";
- 
+
             min_gain_val = "1";
             max_gain_val = "16";
             min_hdr_ratio = "1";
@@ -503,11 +515,11 @@
 					  max_exp_time = "358733";
             //embedded_metadata_height = "2";
           };
- 
+
           ports {
             #address-cells = <1>;
             #size-cells = <0>;
- 
+
             port@0 {
               reg = <0>;
               imx219_out2: endpoint {
@@ -559,7 +571,7 @@
 		min_bits_per_pixel = <10>;
 		vi_peak_byte_per_pixel = <2>;
 		vi_bw_margin_pct = <25>;
-		max_pixel_rate = <170000>;
+		max_pixel_rate = <182400>;
 		isp_peak_byte_per_pixel = <2>;
 		isp_bw_margin_pct = <25>;
 
